@@ -39,7 +39,7 @@ export default function SettingsAdmin({ sb }) {
     setBusy(true); setError('');
     try {
       const url = await uploadImage(sb, file);
-      setS((prev) => ({ ...prev, [key]: url, ...(key === 'headerLogoUrl' ? { headerLogoMode: 'image' } : {}) }));
+      setS((prev) => ({ ...prev, [key]: url, ...(key === 'headerLogoUrl' ? { headerLogoMode: 'image' } : {}), ...(key === 'footerLogoUrl' ? { footerLogoMode: 'image' } : {}) }));
     } catch { setError('이미지를 올리지 못했어요.'); }
     setBusy(false);
     e.target.value = '';
@@ -131,6 +131,10 @@ export default function SettingsAdmin({ sb }) {
             <label className="field"><span>로고 아래 문구</span><input value={s.logoSub} onChange={set('logoSub')} /></label>
           </div>
           <label className="field"><span>메인 헤드라인</span><textarea rows={2} value={s.headline} onChange={set('headline')} /></label>
+          <label className="field">
+            <span>헤드라인 글자 크기 <em className="muted">{s.headlineSize}px</em></span>
+            <input type="range" min={LIMITS.headlineSize[0]} max={LIMITS.headlineSize[1]} step="2" value={s.headlineSize} onChange={(e) => setS({ ...s, headlineSize: Number(e.target.value) })} />
+          </label>
           <label className="field"><span>메인 소개 문구</span><textarea rows={3} value={s.intro} onChange={set('intro')} /></label>
           <label className="field"><span>컨택 안내 문구</span><textarea rows={2} value={s.contactLead} onChange={set('contactLead')} /></label>
           <p className="small muted">여러 줄 칸에서 줄을 바꾸면 사이트에서도 그대로 줄이 바뀌어요.</p>
@@ -159,6 +163,26 @@ export default function SettingsAdmin({ sb }) {
 
         <section>
           <h2>푸터</h2>
+          <div className="field">
+            <span>하단 로고</span>
+            <div className="chips">
+              {[['main', '메인 로고와 같게'], ['image', '다른 이미지'], ['none', '표시 안 함']].map(([k, label]) => (
+                <button type="button" key={k} className={s.footerLogoMode === k ? 'on' : ''} onClick={() => setS({ ...s, footerLogoMode: k })}>{label}</button>
+              ))}
+            </div>
+            {s.footerLogoMode === 'image' && (
+              <div className="logo-field">
+                <div className="logo-box">{s.footerLogoUrl ? <img src={s.footerLogoUrl} alt="" /> : '이미지 없음'}</div>
+                <label className="btn btn-ghost btn-sm">이미지 올리기<input type="file" accept="image/png,image/svg+xml,image/webp,image/jpeg" hidden onChange={(e) => upload('footerLogoUrl', e)} /></label>
+              </div>
+            )}
+          </div>
+          {s.footerLogoMode !== 'none' && (
+            <label className="field">
+              <span>하단 로고 크기 <em className="muted">{s.footerLogoSize}px</em></span>
+              <input type="range" min={LIMITS.footerLogoSize[0]} max={LIMITS.footerLogoSize[1]} value={s.footerLogoSize} onChange={(e) => setS({ ...s, footerLogoSize: Number(e.target.value) })} />
+            </label>
+          )}
           <label className="field"><span>저작권 문구</span><input value={s.copyright} onChange={set('copyright')} /></label>
           <label className="field"><span>대표 이메일</span><input type="email" value={s.footerEmail} onChange={set('footerEmail')} placeholder="hello@yoobros.com" /></label>
           <label className="field"><span>추가 문구</span><textarea rows={3} value={s.footerNote} onChange={set('footerNote')} placeholder="사업자 정보, 주소 등 필요할 때만" /></label>
@@ -188,7 +212,7 @@ export default function SettingsAdmin({ sb }) {
               )}
               {s.showLogoSub && s.logoSub && <span style={{ fontSize: Math.max(8, s.logoSize / 2 * 0.19), fontWeight: 600, letterSpacing: '.32em' }}>{s.logoSub}</span>}
             </div>
-            <p className="pv-title">{s.headline}</p>
+            <p className="pv-title" style={{ fontSize: Math.round(s.headlineSize * 0.43) }}>{s.headline}</p>
             <p className="pv-intro" style={{ opacity: 0.7 }}>{s.intro}</p>
             <div className="pv-btns">
               <span style={{ background: ink, color: bg, borderColor: ink }}>PC&amp;Mobile</span>
@@ -207,6 +231,11 @@ export default function SettingsAdmin({ sb }) {
             </div>
           </div>
           <div className="pv-foot" style={{ borderTop: `1px solid ${ink}22` }}>
+            {s.footerLogoMode === 'image' && s.footerLogoUrl
+              ? <img src={s.footerLogoUrl} alt="" style={{ height: s.footerLogoSize * 0.75, width: 'auto', justifySelf: 'start' }} />
+              : s.footerLogoMode === 'main' && (s.logoUrl
+                ? <img src={s.logoUrl} alt="" style={{ height: s.footerLogoSize * 0.75, width: 'auto', justifySelf: 'start' }} />
+                : <span style={{ color: ink, justifySelf: 'start' }}><LogoMark height={s.footerLogoSize * 0.75} mono /></span>)}
             <div><span>{s.copyright}</span><span>{s.footerEmail}</span></div>
             {s.footerNote && <span style={{ opacity: 0.7, whiteSpace: 'pre-line' }}>{s.footerNote}</span>}
           </div>

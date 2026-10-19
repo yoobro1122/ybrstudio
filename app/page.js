@@ -19,7 +19,7 @@ export default async function Home() {
     <>
       <section className="hero wrap">
         <LogoLockup s={site} height={site.logoSize} />
-        <h1 className="hero-title">{site.headline}</h1>
+        <h1 className="hero-title" style={{ '--hs': `${site.headlineSize}px` }}>{site.headline}</h1>
         <p className="lead hero-lead">{site.intro}</p>
         <div className="actions">
           <Link href="/pc-mobile" className="btn">PC&amp;Mobile</Link>

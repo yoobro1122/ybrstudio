@@ -5,6 +5,7 @@ const site = {
   wordmark: 'YOOBROS',
   logoSub: 'YOOBROS GAME STUDIO',
   headline: '한 편의 영화 같은\n게임을 만듭니다.',
+  headlineSize: 60,     // 메인 헤드라인 글자 크기(px)
   intro:
     'YOOBROS STUDIO는 PC/Mobile 게임과 보드게임을 제작하는 스튜디오입니다.\n테마 속 주인공이 된 것 같은 몰입감을 느끼셨으면 합니다.',
   contactLead: '게임 협업, 플레이테스트 참여, 출판 제안 모두 환영해요.',
@@ -15,6 +16,9 @@ const site = {
   headerLogoSize: 20,  // 상단 로고 크기(px)
   headerLogoMode: 'text', // 'text' | 'image'
   headerLogoUrl: '',
+  footerLogoMode: 'main', // 'main'(메인 로고와 같게) | 'image' | 'none'
+  footerLogoUrl: '',
+  footerLogoSize: 18,     // 하단 로고 높이(px)
   copyright: '© 2026 YOOBROS STUDIO',
   footerEmail: '',
   footerNote: '',

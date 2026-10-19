@@ -71,7 +71,7 @@ p { margin: 0 0 .75em; }
 .logo-sub { font-size: calc(var(--h) * .19); font-weight: 600; letter-spacing: .32em; color: var(--ink); white-space: nowrap; }
 
 .hero { padding-top: 72px; padding-bottom: 40px; }
-.hero-title { white-space: pre-line; font-size: clamp(36px, 6vw, 64px); font-weight: 800; letter-spacing: -0.035em; margin: 56px 0 20px; }
+.hero-title { white-space: pre-line; font-size: min(var(--hs, 60px), 10vw); font-weight: 800; letter-spacing: -0.035em; margin: 56px 0 20px; }
 .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
 
 .btn {
@@ -251,6 +251,7 @@ textarea { resize: vertical; }
 .logo-lockup { max-width: 100%; }
 .logo-lockup .logo-mark, .logo-lockup .logo-img { height: var(--h) !important; width: auto; max-width: 100%; }
 @media (max-width: 760px) { .logo-lockup { --h: min(var(--h-desktop), 22vw) !important; } }
+.footer-logo-img { width: auto; max-width: 60vw; object-fit: contain; }
 .header-logo-img { width: auto; max-width: 60vw; object-fit: contain; }
 
 /* 사이트 설정 */
