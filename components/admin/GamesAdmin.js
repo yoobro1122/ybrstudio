@@ -1,12 +1,12 @@
 'use client';
 import { useCallback, useEffect, useState } from 'react';
-import { STAGES, stageLabel } from '@/lib/status';
+import { STAGES, CATEGORIES, stageLabel, categoryLabel } from '@/lib/status';
 import { fmtDate } from '@/lib/format';
 import { uploadImage } from './upload';
 
 const EMPTY = {
   title: '', slug: '', tagline: '', description: '', players: '', play_time: '', age: '',
-  status: 'idea', play_url: '', cover_url: '', featured: false, sort_order: 0,
+  category: 'board', status: 'idea', play_url: '', cover_url: '', featured: false, sort_order: 0,
 };
 
 export default function GamesAdmin({ sb }) {
@@ -32,7 +32,7 @@ export default function GamesAdmin({ sb }) {
             <li key={g.id}>
               <div className="admin-item-main">
                 <p><strong>{g.title}</strong> {g.featured && <span className="badge approved">메인 노출</span>}</p>
-                <p className="small muted">/games/{g.slug} · {stageLabel(g.status)}{g.play_url ? ' · 웹 테스트 있음' : ''}</p>
+                <p className="small muted">{categoryLabel(g.category)} · /games/{g.slug} · {stageLabel(g.status)}{g.play_url ? ' · 웹 테스트 있음' : ''}</p>
               </div>
               <div className="admin-actions">
                 <button className="btn btn-ghost btn-sm" onClick={() => setEditing(g)}>수정</button>
@@ -85,6 +85,14 @@ function GameForm({ sb, initial, onDone }) {
       <button className="more" onClick={onDone}>목록으로</button>
       <form className="form admin-form" onSubmit={save}>
         <h2>{g.id ? '게임 수정' : '새 게임'}</h2>
+        <fieldset className="field">
+          <legend>종류</legend>
+          <div className="chips">
+            {CATEGORIES.map((c) => (
+              <button type="button" key={c.key} className={g.category === c.key ? 'on' : ''} aria-pressed={g.category === c.key} onClick={() => setG({ ...g, category: c.key })}>{c.label}</button>
+            ))}
+          </div>
+        </fieldset>
         <div className="form-row">
           <label className="field"><span>게임 이름</span><input value={g.title} onChange={set('title')} /></label>
           <label className="field"><span>주소 (영문)</span><input value={g.slug} onChange={set('slug')} placeholder="deadpoint" /></label>

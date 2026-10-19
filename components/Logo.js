@@ -10,11 +10,24 @@ export function LogoMark({ height = 28, mono = false, title = 'YBR' }) {
   );
 }
 
-export function LogoLockup({ height = 64 }) {
+// 메인 로고: 업로드한 이미지가 있으면 이미지, 없으면 기본 YBR 마크
+export function SiteLogo({ s, height = 28, mono = false }) {
+  if (s.logoUrl) return <img src={s.logoUrl} alt={s.siteName} className="logo-img" style={{ height }} />;
+  return <LogoMark height={height} mono={mono} title={s.siteName} />;
+}
+
+export function LogoLockup({ s, height = 64 }) {
   return (
     <span className="logo-lockup" style={{ '--h': `${height}px` }}>
-      <LogoMark height={height} />
-      <span className="logo-sub">BOARDGAME STUDIO</span>
+      <SiteLogo s={s} height={height} />
+      {s.logoSub && <span className="logo-sub">{s.logoSub}</span>}
     </span>
   );
+}
+
+export function HeaderLogo({ s }) {
+  if (s.headerLogoMode === 'image' && s.headerLogoUrl) {
+    return <img src={s.headerLogoUrl} alt={s.siteName} className="header-logo-img" />;
+  }
+  return <span className="wordmark">{s.wordmark}</span>;
 }

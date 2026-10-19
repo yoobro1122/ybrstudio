@@ -29,7 +29,7 @@ export default function MessagesAdmin({ sb }) {
           <div className="admin-item-main">
             <p className="small muted">{fmtDate(m.created_at)} {!m.is_read && <span className="badge pending">새 문의</span>}</p>
             <p><strong>{m.subject || '(제목 없음)'}</strong></p>
-            <p className="small">{m.name} · <a href={`mailto:${m.email}?subject=${encodeURIComponent('Re: ' + (m.subject || 'YBR STUDIO 문의'))}`}>{m.email}</a></p>
+            <p className="small">{m.name} · <a href={`mailto:${m.email}?subject=${encodeURIComponent('Re: ' + (m.subject || 'YOOBROS STUDIO 문의'))}`}>{m.email}</a></p>
             <p className="prose">{m.content}</p>
           </div>
           <div className="admin-actions">

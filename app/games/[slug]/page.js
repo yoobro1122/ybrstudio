@@ -3,6 +3,7 @@ import { serverClient } from '@/lib/supabase';
 import StageTrack from '@/components/StageTrack';
 import ReviewForm from '@/components/ReviewForm';
 import { fmtDate, stars } from '@/lib/format';
+import { categoryLabel } from '@/lib/status';
 
 export const dynamic = 'force-dynamic';
 
@@ -39,6 +40,7 @@ export default async function GamePage({ params }) {
           {game.cover_url ? <img src={game.cover_url} alt={`${game.title} 커버`} /> : <span className="box-placeholder">{game.title}</span>}
         </div>
         <div className="game-info">
+          <p className="kind">{categoryLabel(game.category)}</p>
           <h1>{game.title}</h1>
           {game.tagline && <p className="lead">{game.tagline}</p>}
           {meta.length > 0 && (

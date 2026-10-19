@@ -1,29 +1,17 @@
 :root {
-  --ink: #1C1C1F;
+  /* 기본값. 관리자 > 사이트 설정의 색이 layout에서 덮어씁니다. */
   --paper: #FFFFFF;
-  --board: #F3F3F1;
-  --line: #E1E1DD;
-  --muted: #6B6B70;
+  --ink: #1C1C1F;
   --point: #F2613F;
-  --point-ink: #B73A1B;
+  --board: color-mix(in srgb, var(--ink) 5%, var(--paper));
+  --line: color-mix(in srgb, var(--ink) 13%, var(--paper));
+  --muted: color-mix(in srgb, var(--ink) 62%, var(--paper));
+  --point-ink: color-mix(in srgb, var(--point) 72%, var(--ink));
   --danger: #C0352B;
   --ok: #2E7D4F;
   --radius: 6px;
   --wrap: 1080px;
   color-scheme: light;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --ink: #EDEDEA;
-    --paper: #151517;
-    --board: #1E1E21;
-    --line: #2F2F34;
-    --muted: #A2A2A8;
-    --point-ink: #FF8C6E;
-    --danger: #FF7A70;
-    --ok: #6FD39A;
-    color-scheme: dark;
-  }
 }
 
 * { box-sizing: border-box; }
@@ -65,9 +53,20 @@ p { margin: 0 0 .75em; }
 .site-footer { border-top: 1px solid var(--line); margin-top: 96px; }
 .footer-inner { display: flex; gap: 20px; align-items: center; padding: 28px 24px; flex-wrap: wrap; }
 .footer-inner p { margin: 0; }
-.footer-inner a { margin-left: auto; text-decoration: none; }
+.footer-email { margin-left: auto; text-decoration: none; }
+.footer-note { flex-basis: 100%; white-space: pre-line; margin: 0; }
 
 .logo-mark { color: var(--ink); }
+.wordmark { font-size: 20px; font-weight: 800; letter-spacing: .06em; line-height: 1; color: var(--ink); }
+.kind { font-size: 13px; font-weight: 600; color: var(--muted); margin: 0 0 2px; }
+.hero-lead { white-space: pre-line; }
+.home-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 32px 24px; }
+.home-grid .box-placeholder { font-size: 19px; }
+.people { display: grid; gap: 28px; margin-top: 32px; }
+.person-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; padding: 16px 0 6px; }
+.person-head h2 { margin: 0; }
+.person .contact-list { margin: 0; border-top: 0; }
+.person { border-top: 1.5px solid var(--ink); }
 .logo-lockup { display: inline-flex; flex-direction: column; gap: calc(var(--h) * .16); }
 .logo-sub { font-size: calc(var(--h) * .19); font-weight: 600; letter-spacing: .32em; color: var(--ink); white-space: nowrap; }
 
@@ -247,3 +246,36 @@ textarea { resize: vertical; }
   .admin-list li { flex-direction: column; }
   .meta { gap: 20px; }
 }
+
+.logo-img { width: auto; max-width: 100%; display: block; }
+.header-logo-img { height: 28px; width: auto; }
+
+/* 사이트 설정 */
+.settings { display: flex; flex-wrap: wrap; gap: 48px; align-items: flex-start; }
+.settings-form { flex: 1 1 400px; min-width: 0; display: grid; gap: 36px; }
+.settings-form section { display: grid; gap: 14px; }
+.settings-form h2 { font-size: 18px; margin: 0; }
+.settings-preview { flex: 1 1 380px; min-width: 0; position: sticky; top: 84px; display: grid; gap: 10px; }
+.logo-field { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+.logo-box { width: 160px; height: 80px; border: 1.5px dashed var(--line); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; padding: 8px; color: var(--muted); font-size: 13px; }
+.logo-box img { max-height: 100%; width: auto; }
+.color-row { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.color-row input[type=color] { width: 56px; height: 40px; padding: 2px; border: 1.5px solid var(--line); border-radius: var(--radius); background: var(--paper); cursor: pointer; }
+.swatch { display: inline-flex; width: 36px; height: 18px; border-radius: 999px; overflow: hidden; border: 1px solid var(--line); margin-right: 6px; vertical-align: middle; }
+.swatch span { flex: 1; }
+.warn { padding: 10px 14px; border-radius: var(--radius); background: #FDECE8; color: #9A2E14; font-size: 14px; margin: 0; }
+.person-card { border: 1.5px solid var(--line); border-radius: 8px; padding: 16px; display: grid; gap: 10px; }
+.person-card .form-row { gap: 10px; }
+.text-btn { background: none; border: 0; padding: 0; font: inherit; font-size: 14px; color: var(--muted); text-decoration: underline; cursor: pointer; }
+.text-btn.danger { color: var(--danger); }
+.pv { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.pv-head { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; font-size: 12px; font-weight: 600; gap: 12px; }
+.pv-head nav { display: flex; gap: 12px; flex-wrap: wrap; }
+.pv-body { padding: 26px 20px 22px; display: grid; gap: 12px; }
+.pv-title { font-size: 26px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.2; white-space: pre-line; margin: 0; }
+.pv-intro { font-size: 12px; white-space: pre-line; margin: 0; }
+.pv-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.pv-btns span { display: inline-flex; align-items: center; min-height: 30px; padding: 0 12px; border-radius: 6px; font-size: 12px; font-weight: 800; border: 1.5px solid; }
+.pv-foot { padding: 14px 20px; font-size: 11px; display: grid; gap: 4px; }
+.pv-foot div { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+@media (max-width: 760px) { .settings-preview { position: static; } }

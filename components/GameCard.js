@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import StageTrack from './StageTrack';
-import { stageLabel } from '@/lib/status';
+import { stageLabel, categoryLabel } from '@/lib/status';
 
 export default function GameCard({ game }) {
   return (
@@ -13,6 +13,7 @@ export default function GameCard({ game }) {
         )}
       </div>
       <div className="game-card-body">
+        <p className="kind">{categoryLabel(game.category)}</p>
         <h3>{game.title}</h3>
         {game.tagline && <p className="muted">{game.tagline}</p>}
         <div className="card-track">

@@ -1,22 +1,43 @@
-import site from '@/site.config';
+import { getSettings } from '@/lib/settings';
 import ContactForm from '@/components/ContactForm';
 
 export const metadata = { title: '컨택' };
 
-export default function ContactPage() {
+const ig = (v) => String(v).trim().replace(/^@/, '').replace(/^https?:\/\/(www\.)?instagram\.com\//, '').replace(/\/.*$/, '');
+
+function rows(p) {
+  return [
+    p.email && { label: '메일', value: p.email, href: `mailto:${p.email}` },
+    p.phone && { label: '연락처', value: p.phone, href: `tel:${String(p.phone).replace(/[^0-9+]/g, '')}` },
+    p.instagram && { label: '인스타그램', value: `@${ig(p.instagram)}`, href: `https://instagram.com/${encodeURIComponent(ig(p.instagram))}` },
+  ].filter(Boolean);
+}
+
+export default async function ContactPage() {
+  const site = await getSettings();
   return (
     <section className="section wrap page-top contact">
       <div>
         <h1>컨택</h1>
-        <p className="lead">게임 협업, 플레이테스트 참여, 출판 제안 모두 환영해요.</p>
-        <dl className="contact-list">
-          {site.contacts.map((c) => (
-            <div key={c.label}>
-              <dt>{c.label}</dt>
-              <dd><a href={c.href} target={c.href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer">{c.value}</a></dd>
-            </div>
+        <p className="lead">{site.contactLead}</p>
+        <div className="people">
+          {site.people.filter((p) => p.name).map((p, i) => (
+            <section key={i} className="person">
+              <div className="person-head">
+                <h2>{p.name}</h2>
+                <span className="muted">{p.roles}</span>
+              </div>
+              <dl className="contact-list">
+                {rows(p).map((r) => (
+                  <div key={r.label}>
+                    <dt>{r.label}</dt>
+                    <dd><a href={r.href} target={r.href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer">{r.value}</a></dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
           ))}
-        </dl>
+        </div>
       </div>
       <div className="contact-form">
         <h2 className="h-small">메일 보내기</h2>
