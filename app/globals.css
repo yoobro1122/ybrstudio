@@ -247,8 +247,11 @@ textarea { resize: vertical; }
   .meta { gap: 20px; }
 }
 
-.logo-img { width: auto; max-width: 100%; display: block; }
-.header-logo-img { height: 28px; width: auto; }
+.logo-img { width: auto; max-width: 100%; display: block; object-fit: contain; }
+.logo-lockup { max-width: 100%; }
+.logo-lockup .logo-mark, .logo-lockup .logo-img { height: var(--h) !important; width: auto; max-width: 100%; }
+@media (max-width: 760px) { .logo-lockup { --h: min(var(--h-desktop), 22vw) !important; } }
+.header-logo-img { width: auto; max-width: 60vw; object-fit: contain; }
 
 /* 사이트 설정 */
 .settings { display: flex; flex-wrap: wrap; gap: 48px; align-items: flex-start; }

@@ -10,6 +10,9 @@ const site = {
   contactLead: '게임 협업, 플레이테스트 참여, 출판 제안 모두 환영해요.',
   colors: { bg: '#FFFFFF', ink: '#1C1C1F', point: '#F2613F' },
   logoUrl: '',
+  logoSize: 88,        // 메인 로고 높이(px)
+  showLogoSub: true,   // 로고 아래 문구 표시
+  headerLogoSize: 20,  // 상단 로고 크기(px)
   headerLogoMode: 'text', // 'text' | 'image'
   headerLogoUrl: '',
   copyright: '© 2026 YOOBROS STUDIO',

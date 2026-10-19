@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { mergeSettings, contrast } from '@/lib/settings-shared';
+import { mergeSettings, contrast, LIMITS } from '@/lib/settings-shared';
 import { LogoMark } from '@/components/Logo';
 import { uploadImage } from './upload';
 
@@ -76,6 +76,11 @@ export default function SettingsAdmin({ sb }) {
             </div>
             <p className="small muted">배경이 투명한 PNG나 SVG를 권장해요. 메인 첫 화면과 하단에 쓰여요.</p>
           </div>
+          <label className="field">
+            <span>메인 로고 크기 <em className="muted">{s.logoSize}px</em></span>
+            <input type="range" min={LIMITS.logoSize[0]} max={LIMITS.logoSize[1]} step="2" value={s.logoSize} onChange={(e) => setS({ ...s, logoSize: Number(e.target.value) })} />
+          </label>
+          <label className="check"><input type="checkbox" checked={s.showLogoSub} onChange={(e) => setS({ ...s, showLogoSub: e.target.checked })} /> 로고 아래 문구 보이기 ({s.logoSub || '비어 있음'})</label>
           <div className="field">
             <span>상단 로고</span>
             <div className="chips">
@@ -89,6 +94,10 @@ export default function SettingsAdmin({ sb }) {
               </div>
             )}
           </div>
+          <label className="field">
+            <span>상단 로고 크기 <em className="muted">{s.headerLogoSize}px</em></span>
+            <input type="range" min={LIMITS.headerLogoSize[0]} max={LIMITS.headerLogoSize[1]} value={s.headerLogoSize} onChange={(e) => setS({ ...s, headerLogoSize: Number(e.target.value) })} />
+          </label>
         </section>
 
         <section>
@@ -168,16 +177,16 @@ export default function SettingsAdmin({ sb }) {
         <div className="pv" style={{ background: bg, color: ink, borderColor: `${ink}22` }}>
           <div className="pv-head" style={{ borderBottom: `1px solid ${ink}22` }}>
             {s.headerLogoMode === 'image' && s.headerLogoUrl
-              ? <img src={s.headerLogoUrl} alt="" style={{ height: 20, width: 'auto' }} />
-              : <span style={{ fontWeight: 800, letterSpacing: '.06em', fontSize: 15 }}>{s.wordmark}</span>}
+              ? <img src={s.headerLogoUrl} alt="" style={{ height: s.headerLogoSize * 1.4 * 0.75, width: 'auto' }} />
+              : <span style={{ fontWeight: 800, letterSpacing: '.06em', fontSize: s.headerLogoSize * 0.75 }}>{s.wordmark}</span>}
             <nav><span>PC&amp;Mobile</span><span>보드게임</span><span>블로그</span><span>컨택</span></nav>
           </div>
           <div className="pv-body">
             <div style={{ display: 'grid', gap: 6, justifyItems: 'start' }}>
-              {s.logoUrl ? <img src={s.logoUrl} alt="" style={{ height: 44, width: 'auto' }} /> : (
-                <span style={{ color: ink, '--point': point }}><LogoMark height={44} /></span>
+              {s.logoUrl ? <img src={s.logoUrl} alt="" style={{ height: s.logoSize / 2, width: 'auto', maxWidth: '100%' }} /> : (
+                <span style={{ color: ink, '--point': point }}><LogoMark height={s.logoSize / 2} /></span>
               )}
-              {s.logoSub && <span style={{ fontSize: 9, fontWeight: 600, letterSpacing: '.32em' }}>{s.logoSub}</span>}
+              {s.showLogoSub && s.logoSub && <span style={{ fontSize: Math.max(8, s.logoSize / 2 * 0.19), fontWeight: 600, letterSpacing: '.32em' }}>{s.logoSub}</span>}
             </div>
             <p className="pv-title">{s.headline}</p>
             <p className="pv-intro" style={{ opacity: 0.7 }}>{s.intro}</p>

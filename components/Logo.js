@@ -18,16 +18,16 @@ export function SiteLogo({ s, height = 28, mono = false }) {
 
 export function LogoLockup({ s, height = 64 }) {
   return (
-    <span className="logo-lockup" style={{ '--h': `${height}px` }}>
+    <span className="logo-lockup" style={{ '--h-desktop': `${height}px`, '--h': `${height}px` }}>
       <SiteLogo s={s} height={height} />
-      {s.logoSub && <span className="logo-sub">{s.logoSub}</span>}
+      {s.showLogoSub && s.logoSub && <span className="logo-sub">{s.logoSub}</span>}
     </span>
   );
 }
 
 export function HeaderLogo({ s }) {
   if (s.headerLogoMode === 'image' && s.headerLogoUrl) {
-    return <img src={s.headerLogoUrl} alt={s.siteName} className="header-logo-img" />;
+    return <img src={s.headerLogoUrl} alt={s.siteName} className="header-logo-img" style={{ height: s.headerLogoSize * 1.4 }} />;
   }
-  return <span className="wordmark">{s.wordmark}</span>;
+  return <span className="wordmark" style={{ fontSize: s.headerLogoSize }}>{s.wordmark}</span>;
 }

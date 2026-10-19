@@ -18,7 +18,7 @@ export default async function Home() {
   return (
     <>
       <section className="hero wrap">
-        <LogoLockup s={site} height={88} />
+        <LogoLockup s={site} height={site.logoSize} />
         <h1 className="hero-title">{site.headline}</h1>
         <p className="lead hero-lead">{site.intro}</p>
         <div className="actions">
