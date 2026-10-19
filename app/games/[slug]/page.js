@@ -22,10 +22,12 @@ export default async function GamePage({ params }) {
   if (!game) notFound();
 
   const sb = serverClient();
-  const [{ data: updates }, { data: reviews }] = await Promise.all([
+  const [{ data: updates }, { data: reviews }, { data: playFile }] = await Promise.all([
     sb.from('game_updates').select('*').eq('game_id', game.id).order('created_at', { ascending: false }),
     sb.from('reviews').select('id,nickname,rating,content,created_at').eq('game_id', game.id).eq('status', 'approved').order('created_at', { ascending: false }),
+    sb.from('play_files').select('game_id').eq('game_id', game.id).maybeSingle(),
   ]);
+  const playHref = playFile ? `/play/${game.slug}` : game.play_url;
   const avg = reviews?.length ? reviews.reduce((a, r) => a + r.rating, 0) / reviews.length : 0;
   const meta = [
     game.players && ['인원', game.players],
@@ -52,8 +54,8 @@ export default async function GamePage({ params }) {
             <h2 className="h-small">개발 현황</h2>
             <StageTrack status={game.status} />
           </div>
-          {game.play_url ? (
-            <a href={game.play_url} target="_blank" rel="noopener noreferrer" className="btn btn-point">웹에서 플레이하기</a>
+          {playHref ? (
+            <a href={playHref} target={playFile ? undefined : '_blank'} rel="noopener noreferrer" className="btn btn-point">웹에서 플레이하기</a>
           ) : (
             <p className="small muted">웹 테스트 버전은 준비 중이에요.</p>
           )}
@@ -78,7 +80,7 @@ export default async function GamePage({ params }) {
         </section>
       )}
 
-      <section className="section">
+      <section className="section" id="review">
         <div className="section-head">
           <h2>플레이 후기</h2>
           {reviews?.length > 0 && <span className="muted"><span className="stars">{stars(avg)}</span> {avg.toFixed(1)} · {reviews.length}개</span>}

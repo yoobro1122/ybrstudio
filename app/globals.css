@@ -251,6 +251,10 @@ textarea { resize: vertical; }
 .logo-lockup { max-width: 100%; }
 .logo-lockup .logo-mark, .logo-lockup .logo-img { height: var(--h) !important; width: auto; max-width: 100%; }
 @media (max-width: 760px) { .logo-lockup { --h: min(var(--h-desktop), 22vw) !important; } }
+.play { padding-top: 16px; }
+.play-bar { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; padding-bottom: 12px; }
+.play-actions { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+.play-frame { display: block; width: 100%; height: calc(100dvh - 140px); min-height: 520px; border: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: #fff; }
 .footer-logo-img { width: auto; max-width: 60vw; object-fit: contain; }
 .header-logo-img { width: auto; max-width: 60vw; object-fit: contain; }
 

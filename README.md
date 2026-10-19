@@ -44,3 +44,6 @@ Vercel > 프로젝트 > Settings > Domains 에서 구입한 도메인 추가 후
 - v3: 관리자 > 사이트 설정 추가 (로고 이미지, 배경·메인·포인트 컬러, 사이트 문구, 연락처, 푸터).
   이미 DB를 만든 경우 `supabase/migration-3-settings.sql`을 SQL Editor에서 한 번 실행하세요.
   기기 설정에 따른 자동 다크 모드는 꺼지고, 관리자가 정한 색이 항상 적용돼요.
+- v4: 웹 트라이얼 HTML 업로드. 관리자 > 게임 > 수정에서 HTML 파일을 올리면 /play/게임주소 에서 플레이돼요.
+  이미 DB를 만든 경우 `supabase/migration-4-play-files.sql`을 SQL Editor에서 한 번 실행하세요.
+  업로드한 게임은 격리된 환경에서 실행돼서 사이트 로그인 정보에 접근할 수 없어요. 그래서 게임 안에서 localStorage 저장 기능은 동작하지 않아요.

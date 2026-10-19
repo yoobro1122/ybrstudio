@@ -148,3 +148,18 @@ drop policy if exists "settings read" on public.site_settings;
 create policy "settings read" on public.site_settings for select using (true);
 drop policy if exists "settings admin" on public.site_settings;
 create policy "settings admin" on public.site_settings for all using (public.is_admin()) with check (public.is_admin());
+
+-- 웹 트라이얼 HTML 파일
+create table if not exists public.play_files (
+  game_id uuid primary key references public.games(id) on delete cascade,
+  file_name text not null default '',
+  html text not null,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.play_files enable row level security;
+
+drop policy if exists "play read" on public.play_files;
+create policy "play read" on public.play_files for select using (true);
+drop policy if exists "play admin" on public.play_files;
+create policy "play admin" on public.play_files for all using (public.is_admin()) with check (public.is_admin());

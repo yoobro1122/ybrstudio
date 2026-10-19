@@ -111,7 +111,7 @@ function GameForm({ sb, initial, onDone }) {
               {STAGES.map((s) => <option key={s.key} value={s.key}>{s.label}</option>)}
             </select>
           </label>
-          <label className="field"><span>웹 테스트 링크 (없으면 비워두기)</span><input value={g.play_url} onChange={set('play_url')} placeholder="https://" /></label>
+          <label className="field"><span>외부 웹 테스트 링크 (파일을 올리면 파일이 우선)</span><input value={g.play_url} onChange={set('play_url')} placeholder="https://" /></label>
         </div>
         <div className="field">
           <span>커버 이미지</span>
@@ -128,6 +128,7 @@ function GameForm({ sb, initial, onDone }) {
           {g.id && <button type="button" className="btn btn-danger" onClick={remove}>게임 삭제</button>}
         </div>
       </form>
+      {g.id ? <PlayFile sb={sb} game={g} /> : <p className="small muted">웹 트라이얼 HTML 파일은 게임을 먼저 저장한 뒤 올릴 수 있어요.</p>}
       {g.id && <GameUpdates sb={sb} gameId={g.id} />}
     </div>
   );
@@ -171,6 +172,63 @@ function GameUpdates({ sb, gameId }) {
           </li>
         ))}
       </ul>
+    </section>
+  );
+}
+
+const MAX_HTML = 5 * 1024 * 1024;
+
+function PlayFile({ sb, game }) {
+  const [file, setFile] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState('');
+  const [error, setError] = useState('');
+
+  const load = useCallback(async () => {
+    const { data } = await sb.from('play_files').select('file_name,updated_at').eq('game_id', game.id).maybeSingle();
+    setFile(data || null);
+  }, [sb, game.id]);
+  useEffect(() => { load(); }, [load]);
+
+  async function onFile(e) {
+    const f = e.target.files?.[0];
+    e.target.value = '';
+    if (!f) return;
+    setError(''); setMsg('');
+    if (!/\.html?$/i.test(f.name)) return setError('.html 파일만 올릴 수 있어요.');
+    if (f.size > MAX_HTML) return setError('5MB 이하 파일만 올릴 수 있어요. 이미지는 줄이거나 외부 링크 방식을 써주세요.');
+    setBusy(true);
+    const html = await f.text();
+    const { error: err } = await sb.from('play_files').upsert({ game_id: game.id, file_name: f.name, html, updated_at: new Date().toISOString() });
+    setBusy(false);
+    if (err) return setError('올리지 못했어요. Supabase에 play_files 테이블이 있는지 확인하세요.');
+    setMsg(file ? '새 버전으로 바꿨어요.' : '올렸어요. 게임 상세의 "웹에서 플레이하기" 버튼이 이 파일로 연결돼요.');
+    load();
+  }
+
+  async function remove() {
+    if (!confirm('웹 트라이얼 파일을 삭제할까요?')) return;
+    await sb.from('play_files').delete().eq('game_id', game.id);
+    setMsg(''); load();
+  }
+
+  return (
+    <section className="section">
+      <h2>웹 트라이얼 파일</h2>
+      <p className="small muted">게임 HTML 파일 한 개를 올리면 /play/{game.slug} 주소에서 바로 플레이할 수 있어요. 다시 올리면 새 버전으로 바뀌어요.</p>
+      {file && (
+        <p>
+          <strong>{file.file_name || 'index.html'}</strong>{' '}
+          <span className="small muted">{fmtDate(file.updated_at)} 업로드</span>{' '}
+          <a href={`/play/${game.slug}`} target="_blank" rel="noopener" className="small">플레이 화면 열기</a>
+        </p>
+      )}
+      <div className="admin-actions">
+        <label className="btn btn-sm">{busy ? '올리는 중…' : file ? '새 버전 올리기' : 'HTML 파일 올리기'}<input type="file" accept=".html,.htm,text/html" hidden disabled={busy} onChange={onFile} /></label>
+        {file && <button type="button" className="btn btn-danger btn-sm" onClick={remove}>파일 삭제</button>}
+      </div>
+      {error && <p className="error">{error}</p>}
+      {msg && <p className="notice">{msg}</p>}
     </section>
   );
 }
