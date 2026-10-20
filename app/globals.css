@@ -381,3 +381,9 @@ textarea { resize: vertical; }
   .play-actions .btn { flex: 1; min-height: 44px; }
   .play-frame { height: calc(100dvh - 180px); min-height: 480px; }
 }
+
+/* 웹 트라이얼 전체 화면 */
+.play-full { position: fixed; inset: 0; z-index: 100; background: #0D0B0A; }
+.play-full iframe { display: block; width: 100%; height: 100%; border: 0; }
+body.playing { overflow: hidden; }
+.play-exit { position: fixed; top: calc(env(safe-area-inset-top, 0px) + 10px); right: 10px; z-index: 101; min-height: 40px; padding: 0 16px; border-radius: 999px; border: 0; background: rgba(0,0,0,.65); color: #fff; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }

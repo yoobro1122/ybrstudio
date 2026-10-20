@@ -1,6 +1,6 @@
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { serverClient } from '@/lib/supabase';
+import PlayFrame from '@/components/PlayFrame';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,25 +20,5 @@ export async function generateMetadata({ params }) {
 export default async function PlayPage({ params }) {
   const game = await load(params.slug);
   if (!game) notFound();
-  const raw = `/play/${game.slug}/raw`;
-
-  return (
-    <section className="play">
-      <div className="wrap play-bar">
-        <Link href={`/games/${game.slug}`} className="more">게임 소개로</Link>
-        <strong>{game.title}</strong>
-        <span className="play-actions">
-          <a href={raw} target="_blank" rel="noopener" className="btn btn-ghost btn-sm">새 창으로 열기</a>
-          <Link href={`/games/${game.slug}#review`} className="btn btn-sm">후기 남기기</Link>
-        </span>
-      </div>
-      <iframe
-        src={raw}
-        title={`${game.title} 웹 트라이얼`}
-        className="play-frame"
-        sandbox="allow-scripts allow-forms allow-modals allow-popups allow-pointer-lock allow-downloads"
-        allow="fullscreen; autoplay"
-      />
-    </section>
-  );
+  return <PlayFrame slug={game.slug} title={game.title} src={`/play/${game.slug}/raw`} />;
 }

@@ -1,0 +1,830 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>데드포인트 · 공개 테스트</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E8E1D2; --panel:#DDD4C2; --panel2:#D2C8B4; --ink:#16130F; --muted:#5E574D; --line:#B9AE99;
+  --blood:#B3121C; --bone:#EFE7D6; --night:#0D0B0A;
+  color-scheme: light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D0B0A; --panel:#17130F; --panel2:#211B16; --ink:#EFE7D6; --muted:#A39A8C; --line:#3A332D;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0D0B0A; --panel:#17130F; --panel2:#211B16; --ink:#EFE7D6; --muted:#A39A8C; --line:#3A332D;
+  color-scheme: dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans KR',system-ui,-apple-system,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:15px;line-height:1.45;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;touch-action:manipulation}
+button:focus-visible{outline:3px solid var(--blood);outline-offset:2px}
+.disp{font-family:'Black Han Sans','Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-weight:400}
+.num{font-family:'Anton','Impact','Arial Narrow',sans-serif}
+.muted{color:var(--muted)}
+#app{max-width:560px;margin:0 auto}
+
+/* ---------- setup & results (scrolling pages) ---------- */
+.wrap{padding:12px 12px 96px}
+.hero{position:relative;border-radius:14px;overflow:hidden;background:var(--night);color:var(--bone);min-height:210px;display:flex;align-items:flex-end;padding:18px}
+.hero{min-height:270px}
+.hero svg{position:absolute;left:0;right:0;top:0;width:100%;height:58%}
+.hero .t{position:relative}
+.hero h1{margin:0;font-size:clamp(46px,14vw,80px);line-height:1;position:relative;display:inline-block}
+.hero h1::after{content:"";position:absolute;left:-6px;right:-6px;top:52%;height:6px;background:var(--blood);transform:rotate(-4deg)}
+.hero p{margin:8px 0 0;color:#C9BFAE;font-size:14px}
+.setup{display:grid;gap:20px;margin-top:18px}
+.setup h2{font-size:20px;margin:0 0 8px}
+.seg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.seg button{border:1.5px solid var(--line);background:var(--panel);border-radius:10px;min-height:48px;cursor:pointer;font-size:16px}
+.seg button[aria-pressed="true"]{border-color:var(--blood);background:var(--blood);color:var(--bone)}
+.roles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.role{border:2px solid var(--line);background:var(--panel);border-radius:12px;padding:12px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:4px}
+.role[aria-pressed="true"]{border-color:var(--blood)}
+.role b{font-size:22px}
+.role .muted{font-size:13px}
+.chars{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.charopt{border:2px solid var(--line);background:var(--panel);border-radius:12px;padding:10px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:2px}
+.charopt[aria-pressed="true"]{border-color:var(--blood)}
+.charopt .ab{color:var(--blood);font-size:18px}
+.charopt b{font-size:14px}
+.charopt .muted{font-size:12px !important}
+.start{background:var(--blood);color:var(--bone);border:0;border-radius:12px;min-height:54px;padding:0 24px;font-size:19px;cursor:pointer}
+.setup > div:last-child{position:fixed;left:0;right:0;bottom:0;z-index:5;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));background:var(--bg);border-top:1px solid var(--line);justify-content:space-between}
+.setup > div:last-child .start{flex:1;max-width:420px}
+.linkbtn{background:none;border:0;padding:6px 2px;text-decoration:underline;cursor:pointer;color:var(--muted);min-height:40px}
+.results table{width:100%;border-collapse:collapse;margin:10px 0;font-size:14px}
+.results th,.results td{border-bottom:1px solid var(--line);padding:9px 4px;text-align:left}
+.results td.sc{font-family:'Anton','Impact',sans-serif;font-size:20px;text-align:right}
+.results th:last-child{text-align:right}
+.results .me-row{background:color-mix(in srgb,var(--blood) 12%,transparent)}
+
+/* ---------- play screen (one viewport, no page scroll) ---------- */
+#app.play{height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:6px;padding:6px 8px 8px;overflow:hidden}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:36px}
+.bar .ttl{font-size:18px}
+.bar .tr{display:flex;align-items:center;gap:4px}
+.bar .tk{font-size:18px;margin-right:4px}
+.chipbtn{border:1.5px solid var(--line);background:var(--panel);border-radius:999px;padding:0 12px;min-height:34px;cursor:pointer;font-size:13px}
+
+.board{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:3px;flex-shrink:0}
+.room{height:52px;border:1.5px solid var(--line);border-radius:12px 12px 3px 3px;background:var(--panel);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0;position:relative}
+.room .num{font-size:17px;line-height:1}
+.room .tok{width:16px;height:16px;border-radius:50%;border:1.5px dashed var(--line)}
+.room.blocked{background:var(--panel2)}
+.room.blocked .tok{border:0;background:var(--night);position:relative}
+.room.blocked .tok::after{content:"";position:absolute;inset:3px;background:linear-gradient(45deg,transparent 42%,var(--bone) 42% 58%,transparent 58%),linear-gradient(-45deg,transparent 42%,var(--bone) 42% 58%,transparent 58%)}
+.room.guard{border-color:var(--blood);border-style:dashed}
+.room.guard .tok{border:2px solid var(--blood)}
+.room.mine .tok{border:3px solid var(--blood)}
+.room.lure .tok{border:0;background:var(--blood)}
+.room.inrange{background:color-mix(in srgb,var(--blood) 26%,var(--panel))}
+.room.pick{cursor:pointer;border-color:var(--ink);border-width:2px;animation:pulse 1.4s ease-in-out infinite}
+.room.pick:active{background:color-mix(in srgb,var(--blood) 22%,var(--panel))}
+.room .tag{position:absolute;top:-8px;left:50%;transform:translateX(-50%);font-size:10px;line-height:14px;padding:0 4px;border-radius:4px;background:var(--blood);color:var(--bone);font-weight:700;white-space:nowrap}
+@keyframes pulse{50%{box-shadow:0 0 0 3px color-mix(in srgb,var(--blood) 40%,transparent)}}
+
+.opps{display:flex;gap:5px;flex-shrink:0}
+.opp{flex:1 1 0;min-width:0;border:1.5px solid var(--line);background:var(--panel);border-radius:10px;padding:5px 6px;display:flex;flex-direction:column;gap:2px;text-align:left;cursor:pointer}
+.opp.killer{border-color:var(--blood)}
+.opp.turn{box-shadow:inset 0 0 0 2px var(--ink)}
+.opp.dead{opacity:.6}
+.opp .nm{font-size:14px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.opp .sub{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tags{display:flex;gap:2px;flex-wrap:wrap;min-height:14px}
+.tg{font-size:10px;line-height:14px;border-radius:4px;padding:0 4px;background:var(--ink);color:var(--bg)}
+.tg.red{background:var(--blood);color:var(--bone)}
+.pips{display:flex;gap:2px}
+.pip{width:9px;height:9px;border-radius:2px;border:1.5px solid var(--ink)}
+.pip.on{background:var(--blood);border-color:var(--blood)}
+.mine .pip{width:12px;height:12px}
+
+.table{flex:1 1 auto;min-height:0;border-radius:12px;background:var(--panel2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:8px;overflow:hidden}
+.table .empty{font-size:14px;color:var(--muted);text-align:center}
+.trick{display:flex;justify-content:center;align-items:flex-start;gap:6px;width:100%}
+.slot{flex:0 1 64px;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px}
+.slot .who{font-size:11px;color:var(--muted);max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.slot .who.k{color:var(--blood);font-weight:700}
+.slot .who.lead{color:var(--ink);font-weight:700}
+.range{font-size:13px;font-weight:700}
+
+.status{flex-shrink:0;border-left:4px solid var(--blood);background:var(--panel);border-radius:0 10px 10px 0;padding:7px 10px;display:flex;flex-direction:column;gap:6px}
+.status .msg{margin:0;font-size:14px;line-height:1.4}
+.act{display:flex;gap:6px;flex-wrap:wrap}
+.act:empty{display:none}
+.btn{background:var(--ink);color:var(--bg);border:0;border-radius:10px;padding:0 14px;min-height:42px;cursor:pointer;font-size:14px}
+.btn.red{background:var(--blood);color:var(--bone)}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn.grow{flex:1}
+.btn[disabled]{opacity:.4;cursor:not-allowed}
+
+.mine{flex-shrink:0;border:2px solid var(--line);background:var(--panel);border-radius:12px;padding:6px}
+.mine.turn{border-color:var(--ink)}
+.mine .hd{display:flex;align-items:center;gap:8px;margin-bottom:6px;min-width:0}
+.mine .nm{font-size:17px;white-space:nowrap}
+.mine .sub{font-size:12px;color:var(--muted);white-space:nowrap}
+.items{display:flex;gap:3px;overflow-x:auto;scrollbar-width:none;min-width:0;flex:1}
+.items::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;font-size:11px;border:1px solid var(--line);border-radius:6px;padding:0 5px;white-space:nowrap}
+.chip.set{border-color:var(--blood);color:var(--blood);font-weight:700}
+.hand{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}
+
+/* ---------- cards ---------- */
+.card{position:relative;width:100%;aspect-ratio:5/7;border-radius:7px;border:0;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;color:var(--bone);background:var(--sg,#0D0B0A);box-shadow:inset 0 0 0 1.5px var(--sc,#5C554E);overflow:hidden;container-type:inline-size}
+.slot .card{width:100%}
+button.card{cursor:pointer;transition:transform .12s ease}
+button.card[disabled]{cursor:default;opacity:.32}
+button.card.sel{transform:translateY(-6px);box-shadow:inset 0 0 0 2.5px var(--bone),0 0 0 3px var(--blood)}
+.card .cn{position:absolute;top:4%;left:8%;font-size:24cqw;line-height:1;color:var(--sc)}
+.card .ci{position:absolute;top:27%;left:8%;width:18cqw;height:18cqw}
+.card .bn{position:absolute;top:24%;left:0;right:0;text-align:center;font-size:52cqw;line-height:1}
+.card .it{width:calc(100% - 4px);margin:0 2px 2px;border-radius:0 0 5px 5px;text-align:center;border-top:1px solid var(--sc);padding:2px 1px 3px;line-height:1.1;background:var(--sg)}
+.card .it b{display:block;font-size:16cqw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card .it span{display:block;font-size:13cqw;color:var(--sc);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card .med{width:calc(100% - 4px);margin:0 2px 2px;border-radius:0 0 5px 5px;text-align:center;background:var(--blood);font-size:15cqw;font-weight:700;padding:3px 0}
+.card.k{background:var(--blood);box-shadow:inset 0 0 0 1.5px var(--bone);justify-content:center}
+.card.k .cn{color:var(--bone)}
+.card.k .kn{margin-top:22%;font-size:20cqw;font-weight:700;text-align:center;line-height:1.15}
+.card.k .tool{font-size:15cqw;opacity:.9;min-height:1em}
+.card.back{box-shadow:inset 0 0 0 1.5px #5C554E;background:#0D0B0A repeating-linear-gradient(45deg,#1E1A17 0 3px,transparent 3px 10px)}
+.card.back.kb{background:var(--blood) repeating-linear-gradient(45deg,rgba(13,11,10,.55) 0 3px,transparent 3px 12px);box-shadow:inset 0 0 0 1.5px var(--bone)}
+.card.hit{box-shadow:inset 0 0 0 1.5px var(--sc,#5C554E),0 0 0 3px var(--blood)}
+.card.win{box-shadow:inset 0 0 0 1.5px var(--sc,#5C554E),0 0 0 3px var(--ink)}
+.card.k.hit,.card.k.win{box-shadow:inset 0 0 0 1.5px var(--bone),0 0 0 3px var(--ink)}
+
+/* ---------- sheets ---------- */
+dialog{border:0;border-radius:16px 16px 0 0;max-width:560px;width:100%;margin:auto auto 0;max-height:82dvh;background:var(--bg);color:var(--ink);padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));overflow:auto}
+dialog::backdrop{background:rgba(0,0,0,.6)}
+dialog h3{margin:14px 0 4px;font-size:17px}
+dialog p,dialog li{margin:0 0 6px;font-size:14px}
+dialog ol{padding-left:20px}
+.sheet-close{position:sticky;top:0;float:right;margin:-6px -4px 0 0}
+.logline{margin:0 0 4px;font-size:13px;color:var(--muted)}
+
+@media (min-height:760px){
+  .room{height:60px}
+  .room .num{font-size:20px}
+  .opp{padding:7px 8px}
+}
+@media (max-height:700px){
+  .slot{flex-basis:54px}
+  .table{gap:4px;padding:6px}
+}
+@media (prefers-reduced-motion: reduce){
+  button.card{transition:none}
+  .room.pick{animation:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<dialog id="rules">
+  <h2 class="disp" style="margin:0;font-size:26px">규칙 요약</h2>
+  <h3>목표</h3>
+  <p>생존자는 살아남고, 같은 세트의 아이템 2개를 모아 탈출합니다. 살인마는 생존자를 최대한 많이 죽여야 합니다.</p>
+  <h3>한 트릭의 흐름</h3>
+  <ol>
+    <li>엄폐물 담당 생존자가 장소 하나에 엄폐물을 몰래 설치합니다.</li>
+    <li>선 플레이어부터 카드를 1장씩 냅니다. 리드 슈트가 있으면 따라야 합니다. 살인마는 자신의 차례에 생존 카드 또는 살인 카드를 낼 수 있습니다.</li>
+    <li>생존 카드를 낼 경우, 슈트에 맞춰서 앞 면으로 제출합니다. 살인 카드를 낼 경우, 뒷 면으로 뒤집어서 제출하며 리드 슈트와 같은 슈트로 취급됩니다.</li>
+    <li>공개: 살인마 숫자와 엄폐물이 설치된 장소를 확인합니다. 살인마와 엄폐물 사이(양 끝 포함)에 해당되는 카드를 낸 생존자는 체력 1을 잃습니다.</li>
+    <li>리드 슈트 최고 숫자가 트릭을 가져가고, 트릭 안 아이템을 모두 얻습니다. 살인 카드와 동일한 숫자일 경우, 살인 카드가 승리하며 살인마가 가져간 아이템은 사라집니다.</li>
+    <li>트릭을 가져간 플레이어가 다음 선이 됩니다.</li>
+    <li>선 플레이어가 살아 있는 생존자 중에서 엄폐물을 설치할 플레이어를 결정하고(본인 지정 가능), 엄폐물을 설치합니다. 첫 트릭은 살인마가 결정합니다. 한 번 엄폐물이 설치되었던 숫자나, 방해를 받고 있는 숫자에는 설치할 수 없습니다.</li>
+    <li>살인마가 선이 되어 살인 카드를 비공개로 제출할 경우, 다음 생존자가 제출하는 카드가 리드슈트가 됩니다.</li>
+  </ol>
+  <h3>살인 카드</h3>
+  <p>도끼: 10/ 톱: 0/ 마체테: 5, 데미지 2/ 곰덫: 3·7, 1~5트릭에 내면 다음 트릭에 숫자 하나를 선택하여 한 트릭 동안 엄폐물 설치를 방해합니다.</p>
+  <h3>생존 아이템 세트</h3>
+  <p>무전기+배터리, 로프+카라비너, 차키+연료, 손전등+보조배터리. 세트를 보유한 채로 생존하면 탈출합니다.</p>
+  <p>구급 키트는 사망자가 가져가면 체력 1로 부활합니다. 생존자가 가져갈 경우 아무 효과도 없습니다.</p>
+  <h3>점수</h3>
+  <p>생존자: 생존 +2, 탈출 시 +1, 사망 −1. </p>
+  <p>살인마: 죽인 생존자 1명당 +1(3인은 +2).</p>
+  <p><button class="btn" id="closeRules">닫기</button></p>
+</dialog>
+
+<script>
+"use strict";
+/* ================= data ================= */
+const SUITS = [
+  { name: '숲',   c: '#8DB572', g: '#0E1710', icon: '<path d="M10 1 L15 8 H12.5 L17 14 H11.5 V19 H8.5 V14 H3 L7.5 8 H5 Z" fill="currentColor"/>' },
+  { name: '호수', c: '#6FA3CF', g: '#0C141D', icon: '<path d="M1 7 Q5.5 3 10 7 T19 7 M1 13 Q5.5 9 10 13 T19 13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>' },
+  { name: '모닥불', c: '#E0A84A', g: '#1C150A', icon: '<path d="M10 1 C13 6 17 8 15 14 C14 17 12 19 10 19 C7 19 5 17 5 14 C5 10 8 9 8 5 C9.5 7 10 8 10 10 C11.5 8 11 4 10 1 Z" fill="currentColor"/>' },
+  { name: '지하실', c: '#B08AD6', g: '#16101E', icon: '<path fill-rule="evenodd" d="M4 19 V2 H16 V19 Z M12 10 H14 V12 H12 Z" fill="currentColor"/>' }
+];
+const ITEMS = [
+  { 1: 'rope', 4: 'carkey', 5: 'medkit', 6: 'flashlight', 9: 'radio' },
+  { 1: 'battery', 4: 'powerbank', 6: 'fuel', 9: 'carabiner' },
+  { 3: 'carkey', 4: 'rope', 6: 'radio', 7: 'flashlight' },
+  { 3: 'powerbank', 4: 'battery', 5: 'medkit', 6: 'carabiner', 7: 'fuel' }
+];
+const ITEM_NAME = { radio: '무전기', battery: '배터리', rope: '로프', carabiner: '카라비너', carkey: '차키', fuel: '연료', flashlight: '손전등', powerbank: '보조배터리', medkit: '구급 키트' };
+const PAIR = { radio: 'battery', battery: 'radio', rope: 'carabiner', carabiner: 'rope', carkey: 'fuel', fuel: 'carkey', flashlight: 'powerbank', powerbank: 'flashlight' };
+const SETS = [['radio', 'battery'], ['rope', 'carabiner'], ['carkey', 'fuel'], ['flashlight', 'powerbank']];
+const KILLS = [
+  { id: 'K10', v: 10, name: '도끼', tool: '', dmg: 1 },
+  { id: 'K0', v: 0, name: '톱', tool: '', dmg: 1 },
+  { id: 'KD', v: 5, name: '마체테', tool: '데미지 2', dmg: 2 },
+  { id: 'KG3', v: 3, name: '곰덫', tool: '방해', dmg: 1, guard: true },
+  { id: 'KG7', v: 7, name: '곰덫', tool: '방해', dmg: 1, guard: true }
+];
+const CHARS = [
+  { key: 'hide', ab: '숨기', name: 'A', job: '사진작가', life: 4, uses: 2, desc: '카드를 내기 전에 선언하면 이번 트릭에서 데미지를 받지 않습니다. 라운드당 2회.' },
+  { key: 'dodge', ab: '회피', name: 'B', job: '전직 복싱 선수', life: 4, uses: 0, desc: '내 카드 숫자가 살인마 카드 숫자와 같으면 데미지를 받지 않습니다.' },
+  { key: 'search', ab: '수색', name: 'C', job: '직업군인', life: 4, uses: 1, desc: '트릭 승자보다 먼저 그 트릭의 아이템 1개를 가져옵니다. 라운드당 1회.' },
+  { key: 'tough', ab: '체력', name: 'D', job: '산악 구조대원', life: 5, uses: 0, desc: '시작 체력이 5입니다.' }
+];
+const REMOVE = { 5: [], 4: [2, 8], 3: [2, 4, 6, 8] };
+
+/* ================= helpers ================= */
+const $ = (s) => document.querySelector(s);
+const rnd = (n) => Math.floor(Math.random() * n);
+const shuffle = (a) => { for (let i = a.length - 1; i > 0; i--) { const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const sleep = (ms) => new Promise((r) => setTimeout(r, reduceMotion ? Math.min(ms, 200) : ms));
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+function hitp(v, ks, Ls) {
+  let t = 0, w = 0;
+  for (const [k, kw] of ks) for (const L of Ls) { t += kw * (Math.min(k, L) <= v && v <= Math.max(k, L) ? 1 : 0); w += kw; }
+  return w ? t / w : 0;
+}
+function cardName(c) { return c.t === 's' ? SUITS[c.suit].name + ' ' + c.n : c.v + ' ' + c.name; }
+
+/* ================= state ================= */
+let setup = { n: 5, role: 'surv', char: 0 };
+let G = null;
+
+/* ================= setup screen ================= */
+function renderSetup() {
+  const app = $('#app');
+  app.className = 'wrap';
+  app.innerHTML = `
+  <section class="hero" aria-label="데드포인트">
+    <svg viewBox="0 0 900 300" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+      <circle cx="720" cy="86" r="62" fill="none" stroke="#231E1A" stroke-width="12"/><circle cx="720" cy="86" r="42" fill="#D9D2C1"/>
+      <path d="M0 250 Q160 196 300 228 T620 214 T900 222 V300 H0 Z" fill="#15120F"/>
+      <path d="M370 196 L450 150 L530 196 Z" fill="#050404"/><rect x="384" y="194" width="132" height="58" fill="#050404"/>
+      <rect x="400" y="208" width="16" height="14" fill="#E8C77A"/><rect x="442" y="220" width="18" height="32" fill="#B3121C"/>
+      <path d="M0 300 V214 L18 178 L36 214 V200 L58 150 L80 200 V210 L98 176 L116 210 V300 Z M640 300 V220 L658 184 L676 220 V204 L698 158 L720 204 V216 L738 182 L756 216 V208 L778 164 L800 208 V222 L820 186 L840 222 V212 L862 170 L884 212 V300 Z" fill="#1E1A17"/>
+      <rect x="0" y="262" width="900" height="38" fill="#0D0B0A"/>
+    </svg>
+    <div class="t">
+      <h1 class="disp">데드포인트</h1>
+      <p>산장에 갇힌 생존자와 그들을 쫓는 살인마의 트릭테이킹. 공개 테스트 버전은 1라운드 단판이며, 나머지 자리는 AI가 맡습니다.</p>
+    </div>
+  </section>
+  <div class="setup">
+    <div>
+      <h2 class="disp">인원</h2>
+      <div class="seg" role="group" aria-label="인원">
+        ${[3, 4, 5].map((n) => `<button data-n="${n}" aria-pressed="${setup.n === n}">${n}인</button>`).join('')}
+      </div>
+    </div>
+    <div>
+      <h2 class="disp">역할</h2>
+      <div class="roles">
+        <button class="role" data-role="surv" aria-pressed="${setup.role === 'surv'}"><b class="disp">생존자</b><span class="muted">엄폐물로 살인마를 속이고, 아이템 세트를 모아 탈출하세요.</span></button>
+        <button class="role" data-role="killer" aria-pressed="${setup.role === 'killer'}"><b class="disp" style="color:var(--blood)">살인마</b><span class="muted">엄폐물이 설치된 장소를 추리해 살인 카드로 생존자를 사냥하세요.</span></button>
+      </div>
+    </div>
+    ${setup.role === 'surv' ? `
+    <div>
+      <h2 class="disp">캐릭터</h2>
+      <div class="chars">
+        ${CHARS.map((c, i) => `<button class="charopt" data-char="${i}" aria-pressed="${setup.char === i}">
+          <span class="ab disp">${c.ab}</span><b>${c.name} <span class="muted" style="font-weight:400">· ${c.job}</span></b>
+          <span class="muted" style="font-size:13px">${c.desc}</span><span style="font-size:13px">체력 ${c.life}</span></button>`).join('')}
+      </div>
+    </div>` : ''}
+    <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+      <button class="start disp" id="startBtn">게임 시작</button>
+      <button class="linkbtn" id="rulesBtn">규칙 요약 보기</button>
+    </div>
+  </div>`;
+  app.querySelectorAll('[data-n]').forEach((b) => b.onclick = () => { setup.n = +b.dataset.n; renderSetup(); });
+  app.querySelectorAll('[data-role]').forEach((b) => b.onclick = () => { setup.role = b.dataset.role; renderSetup(); });
+  app.querySelectorAll('[data-char]').forEach((b) => b.onclick = () => { setup.char = +b.dataset.char; renderSetup(); });
+  $('#startBtn').onclick = startGame;
+  $('#rulesBtn').onclick = () => $('#rules').showModal();
+}
+
+/* ================= game setup ================= */
+function startGame() {
+  const n = setup.n;
+  const nums = [1, 2, 3, 4, 5, 6, 7, 8, 9].filter((x) => !REMOVE[n].includes(x));
+  const deck = [];
+  for (let s = 0; s < 4; s++) for (const v of nums) deck.push({ t: 's', suit: s, n: v, item: ITEMS[s][v] || null, id: 's' + s + v });
+  shuffle(deck);
+  const killerSeat = setup.role === 'killer' ? 0 : 1 + rnd(n - 1);
+  const players = [];
+  let charPool = shuffle([0, 1, 2, 3].filter((i) => !(setup.role === 'surv' && i === setup.char)));
+  let idx = 0;
+  for (let s = 0; s < n; s++) {
+    if (s === killerSeat) {
+      players.push({ seat: s, human: s === 0, killer: true, hand: [], label: s === 0 ? '나 (살인마)' : '살인마' });
+    } else {
+      const ci = (s === 0) ? setup.char : charPool.shift();
+      const ch = CHARS[ci];
+      const hand = deck.slice(idx, idx + 8); idx += 8;
+      players.push({ seat: s, human: s === 0, killer: false, ch, life: ch.life, max: ch.life, uses: ch.uses, items: [], hand, dead: false, label: s === 0 ? '나 (' + ch.name + ')' : ch.name });
+    }
+  }
+  const kp = players[killerSeat];
+  kp.hand = deck.slice(idx, idx + 4).concat(KILLS.map((k) => ({ t: 'k', ...k })));
+  for (const p of players) sortHand(p);
+  const survOrder = [];
+  for (let i = 1; i < n; i++) survOrder.push((killerSeat + i) % n);
+  G = {
+    n, nums, players, killerSeat, survOrder,
+    blocked: new Set(), guard: null, trick: 0, leader: (killerSeat + 1) % n,
+    remainingKill: KILLS.map((k) => k.id), killerSurvLeft: 4,
+    lure: null, played: [], leadSuit: null, hidden: new Set(), turn: null, keeper: null,
+    phase: 'lure', revealed: false, range: null, hits: new Set(), winner: null,
+    msg: '', actions: [], log: [], pick: null
+  };
+  playGame();
+}
+function sortHand(p) { p.hand.sort((a, b) => (a.t === 'k') - (b.t === 'k') || (a.suit ?? 9) - (b.suit ?? 9) || (a.n ?? a.v) - (b.n ?? b.v)); }
+function log(t) { G.log.unshift(t); if (G.log.length > 40) G.log.pop(); }
+function surv(seat) { return G.players[seat]; }
+function killerP() { return G.players[G.killerSeat]; }
+function allowedSpaces() { return [1, 2, 3, 4, 5, 6, 7, 8, 9].filter((p) => !G.blocked.has(p) && p !== G.guard); }
+function kdist() {
+  const d = G.remainingKill.map((id) => [KILLS.find((k) => k.id === id).v, 1]);
+  if (G.killerSurvLeft > 0) for (let v = 1; v <= 9; v++) d.push([v, G.killerSurvLeft / 9]);
+  return d;
+}
+function legalFor(p) {
+  const surv = p.hand.filter((c) => c.t === 's');
+  let ls = surv;
+  if (G.leadSuit !== null) { const f = surv.filter((c) => c.suit === G.leadSuit); if (f.length) ls = f; }
+  return ls.concat(p.hand.filter((c) => c.t === 'k'));
+}
+function hasSet(items) { return SETS.some(([a, b]) => items.includes(a) && items.includes(b)); }
+
+/* ================= human input ================= */
+function ask(kind, opts) {
+  return new Promise((resolve) => { G.pick = { kind, ...opts, resolve }; render(); });
+}
+function resolvePick(val) { const p = G.pick; G.pick = null; p.resolve(val); }
+
+/* ================= bots ================= */
+function botLure(seat, allowed) {
+  const hand = G.players[seat].hand, kd = kdist();
+  if (!hand.length) return allowed[rnd(allowed.length)];
+  let best = null, bv = 1e9;
+  for (const L of allowed) {
+    const v = hand.reduce((s, c) => s + hitp(c.n, kd, [L]), 0) / hand.length + Math.random() * 0.05;
+    if (v < bv) { bv = v; best = L; }
+  }
+  return best;
+}
+function botChooseKeeper(chooser, alive) {
+  const ch = G.players[chooser];
+  const sc = alive.map((s) => [s, G.players[s].life + Math.random() * 0.5 - (!ch.killer && s === chooser ? 0.3 : 0)]);
+  sc.sort((a, b) => a[1] - b[1]);
+  // 살인마는 체력이 가장 많은 생존자에게, 생존자는 가장 위험한 생존자에게 엄폐물을 맡깁니다.
+  return ch.killer ? sc[sc.length - 1][0] : sc[0][0];
+}
+function knownKiller(seat) {
+  const kc = G.played.find((x) => x.seat === G.killerSeat);
+  if (!kc) return kdist();
+  if (kc.card.t === 's') return [[kc.card.n, 1]];
+  return G.remainingKill.map((id) => [KILLS.find((k) => k.id === id).v, 1]);
+}
+function itemValue(p, item) {
+  if (!item) return 0;
+  if (p.dead) return item === 'medkit' ? 1 : 0;
+  if (item === 'medkit') return 0;
+  if (hasSet(p.items)) return 0.1;
+  if (p.items.includes(PAIR[item]) && !p.items.includes(item)) return 1;
+  if (p.items.includes(item)) return 0.1;
+  return 0.5;
+}
+function botSurvivorCard(p, legal) {
+  const Ls = p.seat === G.keeper ? [G.lure] : allowedSpaces();
+  const kd = knownKiller(p.seat);
+  const cur = G.played.filter((x) => x.card.t === 's' && x.card.suit === G.leadSuit).map((x) => x.card.n);
+  const curMax = cur.length ? Math.max(...cur) : 0;
+  const trickItems = G.played.map((x) => x.card.item).filter(Boolean);
+  if (p.ch.key === 'hide' && p.uses > 0 && !p.dead) {
+    const risk = Math.min(...legal.map((c) => hitp(c.n, kd, Ls)));
+    if (risk >= 0.45 || G.trick >= 9 - p.uses) { p.uses--; G.hidden.add(p.seat); log(p.label + '이(가) 숨기를 선언했습니다.'); }
+  }
+  const safe = G.hidden.has(p.seat) || p.dead;
+  let best = null, bu = -1e9;
+  for (const c of legal) {
+    let hp = 0;
+    if (!safe) {
+      if (p.ch.key === 'dodge') { let t = 0, w = 0; for (const [k, kw] of kd) { t += kw * (k === c.n ? 0 : hitp(c.n, [[k, 1]], Ls)); w += kw; } hp = t / w; }
+      else hp = hitp(c.n, kd, Ls);
+    }
+    const wins = (G.leadSuit === null && c.n >= 7) || (c.suit === G.leadSuit && c.n > curMax);
+    const gain = Math.max(0, ...trickItems.map((it) => itemValue(p, it)), itemValue(p, c.item));
+    const u = -hp * (1 + (p.life === 1 ? 1 : 0)) + (wins ? 0.45 * gain : 0) - (wins ? 0 : 0.05 * itemValue(p, c.item)) + Math.random() * 0.02;
+    if (u > bu) { bu = u; best = c; }
+  }
+  return best;
+}
+function botKillerCard(p, legal) {
+  const allowed = allowedSpaces();
+  const trickItems = G.played.map((x) => x.card.item).filter((x) => x && x !== 'medkit').length;
+  let best = null, be = -1e9;
+  for (const c of legal) {
+    const kv = c.t === 'k' ? c.v : c.n, dmg = c.t === 'k' ? c.dmg : 1;
+    let e = 0;
+    for (const s of G.survOrder) {
+      const q = G.players[s];
+      if (q.dead || G.hidden.has(s)) continue;
+      const pl = G.played.find((x) => x.seat === s);
+      if (pl) e += dmg * hitp(pl.card.n, [[kv, 1]], allowed);
+      else e += dmg * G.nums.reduce((a, v) => a + hitp(v, [[kv, 1]], allowed), 0) / G.nums.length;
+    }
+    const cur = G.played.filter((x) => x.card.t === 's' && x.card.suit === G.leadSuit).map((x) => x.card.n);
+    const curMax = cur.length ? Math.max(...cur) : 0;
+    const later = G.n - 1 - G.played.length;
+    const myV = c.t === 'k' ? c.v : (G.leadSuit === null || c.suit === G.leadSuit ? c.n : -1);
+    if (myV > 0 && myV >= curMax) e += Math.pow(Math.min(1, myV / 9), later) * (0.2 + 0.15 * trickItems);
+    if (c.guard && G.trick <= 5) e += 0.15;
+    e += Math.random() * 0.1;
+    if (e > be) { be = e; best = c; }
+  }
+  return best;
+}
+
+/* ================= game loop ================= */
+async function playGame() {
+  log('라운드를 시작합니다. 살인마는 ' + (G.killerSeat === 0 ? '당신' : killerP().label) + '입니다.');
+  for (let t = 1; t <= 8; t++) { G.trick = t; await playTrick(t); }
+  showResults();
+}
+
+async function playTrick(t) {
+  Object.assign(G, { played: [], leadSuit: null, hidden: new Set(), revealed: false, range: null, hits: new Set(), winner: null, lure: null, actions: [] });
+  const allowed = allowedSpaces();
+  const alive = G.survOrder.filter((s) => !G.players[s].dead);
+  const chooser = t === 1 ? G.killerSeat : G.leader;
+  const cp = G.players[chooser];
+  let keeper = null;
+  if (alive.length) {
+    G.turn = chooser; G.phase = 'choose';
+    if (cp.human) {
+      G.msg = (t === 1 ? '첫 트릭입니다. ' : '') + '이번 트릭에 엄폐물을 설치할 생존자를 고르세요.' + (cp.killer ? '' : ' 자신을 골라도 됩니다.');
+      keeper = await ask('who', { options: alive });
+    } else {
+      G.msg = cp.label + '이(가) 엄폐물을 설치할 생존자를 고르고 있습니다.';
+      render(); await sleep(600);
+      keeper = botChooseKeeper(chooser, alive);
+    }
+    log('트릭 ' + t + ': ' + cp.label + '이(가) ' + G.players[keeper].label + '을(를) 엄폐물 담당으로 정했습니다.');
+  }
+  G.keeper = keeper; G.phase = 'lure'; G.turn = keeper;
+  if (keeper === null) {
+    G.lure = null;
+    log('트릭 ' + t + ': 살아 있는 생존자가 없어 엄폐물을 설치하지 않습니다.');
+  } else {
+    const kp = G.players[keeper];
+    if (kp.human) {
+      G.msg = '당신이 엄폐물 담당입니다. 엄폐물을 설치할 장소를 고르세요. 다른 사람에게는 보이지 않습니다.';
+      G.lure = await ask('space', { options: allowed, purpose: 'lure' });
+    } else {
+      G.msg = kp.label + '이(가) 엄폐물을 설치하고 있습니다.';
+      render(); await sleep(700);
+      G.lure = botLure(keeper, allowed);
+    }
+    log('트릭 ' + t + ': ' + kp.label + '이(가) 엄폐물을 설치했습니다.');
+  }
+
+  G.phase = 'play';
+  for (let i = 0; i < G.n; i++) {
+    const seat = (G.leader + i) % G.n;
+    const p = G.players[seat];
+    G.turn = seat;
+    const legal = legalFor(p);
+    let card;
+    if (p.human) {
+      G.msg = p.killer ? '낼 카드를 고르세요. 살인 카드는 뒷면으로 내며 리드 슈트로 취급됩니다.' : '낼 카드를 고르세요.' + (G.leadSuit !== null ? ' 리드 슈트는 ' + SUITS[G.leadSuit].name + '입니다.' : '');
+      card = await ask('card', { options: legal.map((c) => c.id) });
+      card = p.hand.find((c) => c.id === card);
+    } else {
+      G.msg = p.label + '이(가) 카드를 고르고 있습니다.';
+      render(); await sleep(550);
+      card = p.killer ? botKillerCard(p, legal) : botSurvivorCard(p, legal);
+    }
+    p.hand.splice(p.hand.indexOf(card), 1);
+    G.played.push({ seat, card });
+    if (G.leadSuit === null && card.t === 's') G.leadSuit = card.suit;
+    const hiddenToMe = card.t === 'k' && G.killerSeat !== 0;
+    log(p.label + ': ' + (hiddenToMe ? '살인 카드 (뒷면)' : cardName(card)));
+    render();
+  }
+
+  // reveal
+  G.turn = null; G.phase = 'reveal'; G.revealed = true;
+  const kc = G.played.find((x) => x.seat === G.killerSeat).card;
+  const kv = kc.t === 'k' ? kc.v : kc.n, dmg = kc.t === 'k' ? kc.dmg : 1;
+  const hasCover = G.lure !== null;
+  const lo = hasCover ? Math.min(kv, G.lure) : 99, hi = hasCover ? Math.max(kv, G.lure) : -1;
+  G.range = hasCover ? [lo, hi] : null;
+  const notes = [];
+  for (const s of G.survOrder) {
+    const p = G.players[s];
+    if (p.dead) continue;
+    const c = G.played.find((x) => x.seat === s).card;
+    if (c.n < lo || c.n > hi) continue;
+    if (G.hidden.has(s)) { notes.push(p.label + ' 숨기로 무사'); continue; }
+    if (p.ch.key === 'dodge' && c.n === kv) { notes.push(p.label + ' 회피 성공'); continue; }
+    p.life = Math.max(0, p.life - dmg); G.hits.add(s);
+    if (p.life === 0) { p.dead = true; notes.push(p.label + ' 사망'); } else notes.push(p.label + ' 체력 −' + dmg);
+  }
+  if (kc.t === 'k') G.remainingKill = G.remainingKill.filter((id) => id !== kc.id); else G.killerSurvLeft--;
+
+  // winner
+  // 살인 카드는 리드 슈트로 취급하고, 같은 숫자면 살인 카드가 이깁니다.
+  let win, bn = -1;
+  for (const x of G.played) {
+    const v = x.card.t === 'k' ? x.card.v : (x.card.suit === G.leadSuit ? x.card.n : -1);
+    if (v > bn || (v === bn && x.card.t === 'k')) { bn = v; win = x.seat; }
+  }
+  G.winner = win;
+  const head = '살인마 ' + kv + (kc.t === 'k' ? ' (' + kc.name + ')' : '') + (hasCover ? ', 엄폐물 ' + G.lure + ' → 범위 ' + lo + '~' + hi + '. ' : '. ');
+  G.msg = head + (notes.length ? notes.join(', ') + '.' : '아무도 다치지 않았습니다.');
+  log(G.msg);
+  render();
+  await sleep(500);
+
+  // items: search first
+  let pool = G.played.map((x) => x.card.item).filter(Boolean);
+  for (const s of G.survOrder) {
+    const p = G.players[s];
+    if (p.ch.key !== 'search' || p.uses <= 0 || s === win || !pool.length) continue;
+    let take = null;
+    if (p.human) {
+      G.msg = head + '수색을 쓸 수 있습니다. 가져올 아이템을 고르세요.';
+      take = await ask('search', { options: [...new Set(pool)] });
+    } else {
+      const v = pool.map((it) => [it, itemValue(p, it)]).sort((a, b) => b[1] - a[1]);
+      if (v[0][1] >= 0.5) take = v[0][0];
+    }
+    if (take) {
+      p.uses--; pool.splice(pool.indexOf(take), 1);
+      if (take === 'medkit') { if (p.dead) { p.dead = false; p.life = 1; log(p.label + '이(가) 수색으로 구급 키트를 찾아 부활했습니다.'); } }
+      else { p.items.push(take); log(p.label + '이(가) 수색으로 ' + ITEM_NAME[take] + '을(를) 가져왔습니다.'); }
+    }
+  }
+  const wp = G.players[win];
+  if (wp.killer) { if (pool.length) log('살인마가 트릭을 가져가 아이템 ' + pool.length + '개가 사라졌습니다.'); else log('살인마가 트릭을 가져갔습니다.'); }
+  else {
+    for (const it of pool) {
+      if (it === 'medkit') { if (wp.dead) { wp.dead = false; wp.life = 1; log(wp.label + '이(가) 구급 키트로 부활했습니다.'); } }
+      else wp.items.push(it);
+    }
+    log(wp.label + '이(가) 트릭을 가져갔습니다' + (pool.filter((x) => x !== 'medkit').length ? ' (' + pool.filter((x) => x !== 'medkit').map((x) => ITEM_NAME[x]).join(', ') + ')' : '') + '.');
+  }
+
+  // guard
+  let nextGuard = null;
+  if (kc.guard && G.trick <= 5) {
+    const opts = [1, 2, 3, 4, 5, 6, 7, 8, 9].filter((p) => !G.blocked.has(p) && p !== G.lure);
+    if (opts.length) {
+      if (killerP().human) { G.msg = '곰덫: 다음 트릭에 엄폐물 설치를 방해할 숫자를 고르세요.'; nextGuard = await ask('space', { options: opts, purpose: 'guard' }); }
+      else nextGuard = opts[rnd(opts.length)];
+      log('곰덫: 다음 트릭에 ' + nextGuard + '번 장소에는 엄폐물을 설치할 수 없습니다.');
+    }
+  }
+  if (hasCover) G.blocked.add(G.lure);
+  G.guard = nextGuard;
+  G.leader = win;
+  G.phase = 'done';
+  G.msg = head + (notes.length ? notes.join(', ') + '. ' : '아무도 다치지 않았습니다. ') + (wp.killer ? '살인마' : wp.label) + '이(가) 트릭을 가져갔습니다.';
+  await ask('next', {});
+}
+
+/* ================= render (mobile-first) ================= */
+function suitIcon(s) { return `<svg class="ci" viewBox="0 0 20 20" aria-hidden="true" style="color:${SUITS[s].c}">${SUITS[s].icon}</svg>`; }
+function cardLabel(c) { return c.t === 's' ? cardName(c) + (c.item ? ', ' + ITEM_NAME[c.item] : '') : '살인 카드 ' + c.v + ' ' + c.name; }
+function cardHTML(c, o = {}) {
+  const tag = o.button ? 'button' : 'div';
+  const attrs = o.button ? ` data-card="${c.id}" ${o.disabled ? 'disabled' : ''} aria-label="${esc(cardLabel(c))}"${o.sel ? ' aria-pressed="true"' : ''}` : ` role="img" aria-label="${esc(cardLabel(c))}"`;
+  const cls = 'card' + (o.hit ? ' hit' : '') + (o.win ? ' win' : '') + (o.sel ? ' sel' : '');
+  if (o.back) return `<div class="${cls} back${o.kb ? ' kb' : ''}" role="img" aria-label="뒷면 살인 카드"></div>`;
+  if (c.t === 'k') return `<${tag} class="${cls} k"${attrs}><span class="cn num">${c.v}</span><span class="kn">${c.name}</span><span class="tool">${c.tool || ''}</span></${tag}>`;
+  const S = SUITS[c.suit];
+  let low = '';
+  if (c.item === 'medkit') low = `<span class="med">구급 키트</span>`;
+  else if (c.item) low = `<span class="it"><b>${ITEM_NAME[c.item]}</b><span>${ITEM_NAME[PAIR[c.item]]}</span></span>`;
+  return `<${tag} class="${cls}" style="--sc:${S.c};--sg:${S.g}"${attrs}><span class="cn num">${c.n}</span>${suitIcon(c.suit)}<span class="bn num">${c.n}</span>${low}</${tag}>`;
+}
+function pipsHTML(p) { let h = ''; for (let i = 1; i <= p.max; i++) h += `<span class="pip${i <= p.life ? ' on' : ''}"></span>`; return `<span class="pips" role="img" aria-label="체력 ${p.life}/${p.max}">${h}</span>`; }
+function itemsHTML(p) {
+  if (!p.items.length) return '<span class="muted" style="font-size:12px">아이템 없음</span>';
+  const done = SETS.filter(([a, b]) => p.items.includes(a) && p.items.includes(b)).flat();
+  return p.items.map((it) => `<span class="chip${done.includes(it) ? ' set' : ''}">${ITEM_NAME[it]}</span>`).join('');
+}
+function tagsFor(p) {
+  const t = [];
+  if (G.leader === p.seat && G.phase !== 'done') t.push('<span class="tg">선</span>');
+  if (G.keeper === p.seat && !p.killer) t.push('<span class="tg">엄폐물</span>');
+  if (G.hidden.has(p.seat)) t.push('<span class="tg red">숨기</span>');
+  if (p.dead) t.push('<span class="tg red">사망</span>');
+  if (!p.killer && !p.dead && hasSet(p.items)) t.push('<span class="tg red">탈출 가능</span>');
+  return t.join('');
+}
+function oppHTML(p) {
+  const cls = 'opp' + (p.killer ? ' killer' : '') + (G.turn === p.seat ? ' turn' : '') + (p.dead ? ' dead' : '');
+  if (p.killer) return `<button class="${cls}" data-opp="${p.seat}" aria-label="살인마 정보">
+    <span class="nm disp" style="color:var(--blood)">살인마</span>
+    <span class="sub">살인 카드 ${G.remainingKill.length}</span>
+    <span class="tags">${tagsFor(p)}</span></button>`;
+  return `<button class="${cls}" data-opp="${p.seat}" aria-label="${esc(p.ch.name)} 정보">
+    <span class="nm disp">${esc(p.ch.name)}</span>
+    ${pipsHTML(p)}
+    <span class="sub">${p.ch.ab}${p.ch.uses ? ' ' + p.uses + '/' + p.ch.uses : ''}</span><span class="sub">아이템 ${p.items.length}</span>
+    <span class="tags">${tagsFor(p)}</span></button>`;
+}
+function boardHTML() {
+  const pick = G.pick && G.pick.kind === 'space' ? G.pick : null;
+  let h = '';
+  for (let r = 1; r <= 9; r++) {
+    const cls = ['room'];
+    let tag = '';
+    if (G.blocked.has(r)) cls.push('blocked');
+    if (G.guard === r) { cls.push('guard'); tag = '방해'; }
+    if (G.revealed && G.lure === r) { cls.push('lure'); tag = '엄폐물'; }
+    else if (!G.revealed && G.lure === r && G.keeper === 0) { cls.push('mine'); tag = '내 엄폐물'; }
+    if (G.revealed && G.range && r >= G.range[0] && r <= G.range[1]) cls.push('inrange');
+    const can = pick && pick.options.includes(r);
+    if (can) cls.push('pick');
+    const inner = `<span class="num">${r}</span><span class="tok"></span>${tag ? `<span class="tag">${tag}</span>` : ''}`;
+    h += can ? `<button class="${cls.join(' ')}" data-space="${r}" aria-label="${r}번 장소 선택">${inner}</button>`
+             : `<div class="${cls.join(' ')}" aria-label="${r}번 장소${tag ? ' ' + tag : ''}${G.blocked.has(r) ? ' 설치 불가' : ''}">${inner}</div>`;
+  }
+  return `<div class="board">${h}</div>`;
+}
+function playedCard(x) {
+  const o = { hit: G.hits.has(x.seat), win: G.revealed && G.winner === x.seat };
+  if (x.card.t === 'k' && !G.revealed && G.killerSeat !== 0) return cardHTML(x.card, { back: true, kb: true });
+  return cardHTML(x.card, o);
+}
+function tableHTML() {
+  if (!G.played.length) {
+    const lead = G.players[G.leader];
+    const keeperTxt = G.keeper !== null && G.keeper !== undefined && G.players[G.keeper] ? ' · 엄폐물 담당 ' + (G.keeper === 0 ? '나' : G.players[G.keeper].ch.name) : '';
+    return `<div class="empty">트릭 ${G.trick} · 선 ${lead.seat === 0 ? '나' : (lead.killer ? '살인마' : lead.ch.name)}${keeperTxt}</div>`;
+  }
+  const slots = G.played.map((x, i) => {
+    const p = G.players[x.seat];
+    const nm = x.seat === 0 ? '나' : (p.killer ? '살인마' : p.ch.name);
+    return `<div class="slot">${playedCard(x)}<span class="who${p.killer ? ' k' : ''}${i === 0 ? ' lead' : ''}">${esc(nm)}</span></div>`;
+  }).join('');
+  const lead = G.leadSuit !== null ? `<span class="muted" style="font-size:12px">리드 슈트 ${SUITS[G.leadSuit].name}</span>` : '';
+  const range = G.revealed && G.range ? `<span class="range">범위 ${G.range[0]}~${G.range[1]}</span>` : '';
+  return `<div class="trick">${slots}</div>${range || lead}`;
+}
+function actionsHTML() {
+  const p = G.pick;
+  if (!p) return '';
+  if (p.kind === 'who') return p.options.map((s) => `<button class="btn grow" data-who="${s}">${s === 0 ? '나' : esc(G.players[s].ch.name)} · 체력 ${G.players[s].life}</button>`).join('');
+  if (p.kind === 'next') return `<button class="btn red grow" data-next>${G.trick < 8 ? '다음 트릭' : '결과 보기'}</button>`;
+  if (p.kind === 'search') return p.options.map((it) => `<button class="btn" data-take="${it}">${ITEM_NAME[it]}</button>`).join('') + `<button class="btn ghost" data-take="">쓰지 않기</button>`;
+  if (p.kind === 'card') {
+    const me = G.players[0];
+    let h = '';
+    if (!me.killer && me.ch.key === 'hide' && (me.uses > 0 || G.hidden.has(0)) && !me.dead) {
+      const on = G.hidden.has(0);
+      h += `<button class="btn ${on ? 'red' : 'ghost'}" data-hide aria-pressed="${on}">${on ? '숨기 선언함' : '숨기 (' + me.uses + ')'}</button>`;
+    }
+    const sel = G.sel && p.options.includes(G.sel) ? me.hand.find((c) => c.id === G.sel) : null;
+    h += sel ? `<button class="btn red grow" data-play>${esc(sel.t === 's' ? cardName(sel) : sel.name)} 내기</button>`
+             : `<button class="btn grow" disabled>카드를 고르세요</button>`;
+    return h;
+  }
+  return '';
+}
+function meHTML() {
+  const me = G.players[0];
+  const pick = G.pick && G.pick.kind === 'card' ? G.pick : null;
+  const hand = me.hand.map((c) => cardHTML(c, { button: true, sel: G.sel === c.id, disabled: !pick || !pick.options.includes(c.id) })).join('');
+  const head = me.killer
+    ? `<span class="nm disp" style="color:var(--blood)">살인마</span><span class="sub">살인 카드 ${G.remainingKill.length}장 남음</span>`
+    : `<span class="nm disp">${esc(me.ch.name)}</span>${pipsHTML(me)}<span class="sub">${me.ch.ab}${me.ch.uses ? ' ' + me.uses + '/' + me.ch.uses : ''}</span><span class="items">${itemsHTML(me)}</span>`;
+  return `<section class="mine${G.turn === 0 ? ' turn' : ''}" aria-label="내 자리"><div class="hd">${head}</div>
+    <div class="hand" role="group" aria-label="내 손패">${hand}</div></section>`;
+}
+function openSheet(html) {
+  let d = document.getElementById('sheet');
+  if (!d) { d = document.createElement('dialog'); d.id = 'sheet'; document.body.appendChild(d); d.addEventListener('click', (e) => { if (e.target === d) d.close(); }); }
+  d.innerHTML = `<button class="btn ghost sheet-close" data-close>닫기</button>${html}`;
+  d.querySelector('[data-close]').onclick = () => d.close();
+  d.showModal();
+}
+function oppSheet(seat) {
+  const p = G.players[seat];
+  if (p.killer) {
+    const left = G.remainingKill.map((id) => KILLS.find((k) => k.id === id)).map((k) => k.v + ' ' + k.name).join(', ');
+    openSheet(`<h2 class="disp" style="margin:0;font-size:24px;color:var(--blood)">살인마</h2>
+      <p>손패 ${p.hand.length}장 · 남은 생존 카드 ${G.killerSurvLeft}장</p><h3>아직 나오지 않은 살인 카드</h3><p>${left || '없음'}</p>`);
+    return;
+  }
+  openSheet(`<h2 class="disp" style="margin:0;font-size:24px">${esc(p.ch.name)}</h2>
+    <p class="muted">${esc(p.ch.job)}</p>
+    <h3>능력 · ${p.ch.ab}${p.ch.uses ? ' (' + p.uses + '/' + p.ch.uses + ')' : ''}</h3><p>${esc(p.ch.desc)}</p>
+    <h3>체력 ${p.life}/${p.max}</h3>${pipsHTML(p)}
+    <h3>아이템</h3><div class="items" style="flex-wrap:wrap">${itemsHTML(p)}</div>`);
+}
+function logSheet() {
+  openSheet(`<h2 class="disp" style="margin:0 0 10px;font-size:24px">진행 기록</h2>${G.log.map((l) => `<p class="logline">${esc(l)}</p>`).join('')}`);
+}
+function render() {
+  if (!G) return;
+  const app = $('#app');
+  app.className = 'play';
+  if (!G.pick || G.pick.kind !== 'card') G.sel = null;
+  const others = G.players.filter((p) => p.seat !== 0);
+  app.innerHTML = `
+    <div class="bar"><span class="ttl disp">데드포인트</span>
+      <span class="tr"><span class="tk num">${G.trick}/8</span>
+      <button class="chipbtn" id="logBtn">기록</button><button class="chipbtn" id="rulesBtn">규칙</button></span></div>
+    ${boardHTML()}
+    <div class="opps">${others.map(oppHTML).join('')}</div>
+    <div class="table" aria-label="이번 트릭">${tableHTML()}</div>
+    <div class="status" role="status" aria-live="polite"><p class="msg">${esc(G.msg)}</p><div class="act">${actionsHTML()}</div></div>
+    ${meHTML()}`;
+  $('#rulesBtn').onclick = () => $('#rules').showModal();
+  $('#logBtn').onclick = logSheet;
+  app.querySelectorAll('[data-opp]').forEach((b) => b.onclick = () => oppSheet(+b.dataset.opp));
+  app.querySelectorAll('[data-card]').forEach((b) => b.onclick = () => {
+    if (!G.pick || G.pick.kind !== 'card') return;
+    const id = b.dataset.card;
+    if (G.sel === id) { G.sel = null; resolvePick(id); return; }
+    G.sel = id; render();
+  });
+  const pl = app.querySelector('[data-play]');
+  if (pl) pl.onclick = () => { const id = G.sel; G.sel = null; resolvePick(id); };
+  app.querySelectorAll('[data-space]').forEach((b) => b.onclick = () => { if (G.pick && G.pick.kind === 'space') resolvePick(+b.dataset.space); });
+  app.querySelectorAll('[data-take]').forEach((b) => b.onclick = () => resolvePick(b.dataset.take || null));
+  app.querySelectorAll('[data-who]').forEach((b) => b.onclick = () => resolvePick(+b.dataset.who));
+  const nx = app.querySelector('[data-next]'); if (nx) nx.onclick = () => resolvePick(true);
+  const hd = app.querySelector('[data-hide]');
+  if (hd) hd.onclick = () => {
+    const me = G.players[0];
+    if (G.hidden.has(0)) { G.hidden.delete(0); me.uses++; } else { G.hidden.add(0); me.uses--; }
+    render();
+  };
+}
+
+/* ================= results ================= */
+function showResults() {
+  $('#app').className = 'wrap';
+  const perDeath = G.n === 3 ? 2 : 1;
+  const rows = [];
+  let deaths = 0;
+  for (const s of G.survOrder) {
+    const p = G.players[s];
+    let score, state;
+    if (p.dead) { score = -1; state = '사망'; deaths++; }
+    else if (hasSet(p.items)) { score = 3; state = '탈출'; }
+    else { score = 2; state = '생존'; }
+    rows.push({ p, name: p.human ? '나 (' + p.ch.name + ')' : p.ch.name, role: '생존자 · ' + p.ch.ab, state, score });
+  }
+  const kp = killerP();
+  rows.push({ p: kp, name: kp.human ? '나' : 'AI', role: '살인마', state: deaths + '명 처치', score: deaths * perDeath });
+  rows.sort((a, b) => b.score - a.score);
+  const top = rows[0].score;
+  const winners = rows.filter((r) => r.score === top).map((r) => r.name);
+  $('#app').innerHTML = `
+  <section class="hero" style="min-height:180px"><div class="t"><h1 class="disp">새벽</h1><p>밤이 끝났습니다. ${esc(winners.join(', '))}${winners.length > 1 ? '이(가) 공동' : '이(가)'} 가장 높은 점수를 얻었습니다.</p></div></section>
+  <div class="results">
+    <table><thead><tr><th>플레이어</th><th>역할</th><th>결과</th><th>점수</th></tr></thead><tbody>
+    ${rows.map((r) => `<tr class="${r.p.human ? 'me-row' : ''}"><td>${esc(r.name)}</td><td>${r.role}</td><td>${r.state}</td><td class="sc">${r.score > 0 ? '+' : ''}${r.score}</td></tr>`).join('')}
+    </tbody></table>
+    <p class="muted">생존 +2, 탈출하면 +1 추가, 사망 −1. 살인마는 죽인 생존자 1명당 +${perDeath}.</p>
+    <p class="muted">테스트 버전은 1라운드 단판입니다. 정식 게임은 살인마를 바꿔 가며 3라운드를 진행합니다.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
+      <button class="start disp" id="again">같은 설정으로 다시</button>
+      <button class="btn ghost" id="toSetup">설정 바꾸기</button>
+    </div>
+  </div>`;
+  $('#again').onclick = startGame;
+  $('#toSetup').onclick = () => { G = null; renderSetup(); };
+}
+
+document.getElementById('closeRules').onclick = () => document.getElementById('rules').close();
+renderSetup();
+</script>
+</body>
+</html>
