@@ -188,6 +188,37 @@ export default function SettingsAdmin({ sb }) {
           <label className="field"><span>추가 문구</span><textarea rows={3} value={s.footerNote} onChange={set('footerNote')} placeholder="사업자 정보, 주소 등 필요할 때만" /></label>
         </section>
 
+        <section>
+          <h2>SNS</h2>
+          <div className="form-row">
+            <label className="field"><span>인스타그램 (@ 없이 계정만)</span><input value={s.instagram} onChange={set('instagram')} placeholder="yoobros_studio" /></label>
+            <label className="field"><span>X (@ 없이 계정만)</span><input value={s.x} onChange={set('x')} placeholder="yoobros_studio" /></label>
+          </div>
+          <p className="small muted">입력하면 메인 화면 버튼 아래와 하단에 아이콘 링크가 생겨요. 검색엔진에도 스튜디오 공식 계정으로 알려줘요.</p>
+        </section>
+
+        <section>
+          <h2>검색 노출</h2>
+          <label className="field">
+            <span>사이트 대표 설명 <em className="muted">{(s.seoDescription || '').length}자 · 80~150자 권장</em></span>
+            <textarea rows={3} value={s.seoDescription} onChange={set('seoDescription')} placeholder={s.intro.split('\n')[0]} />
+          </label>
+          <p className="small muted">검색 결과와 링크 공유 미리보기에 보이는 설명이에요. 비우면 메인 소개 문구 첫 줄을 써요.</p>
+          <div className="field">
+            <span>기본 공유 이미지</span>
+            <div className="logo-field">
+              <div className="logo-box og-box"><img src={s.ogImageUrl || '/og-default.png'} alt="" /></div>
+              <div className="field">
+                <label className="btn btn-ghost btn-sm">이미지 올리기<input type="file" accept="image/png,image/jpeg,image/webp" hidden onChange={(e) => upload('ogImageUrl', e)} /></label>
+                {s.ogImageUrl && <button type="button" className="text-btn" onClick={() => setS({ ...s, ogImageUrl: '' })}>기본 이미지로 되돌리기</button>}
+              </div>
+            </div>
+            <p className="small muted">1200×630px 권장. 카카오톡·SNS에 링크를 붙였을 때 보이는 이미지예요. 게임과 블로그 글은 각자의 커버·첫 사진이 우선 쓰여요.</p>
+          </div>
+          <label className="field"><span>구글 서치콘솔 소유 확인 코드</span><input value={s.googleVerification} onChange={set('googleVerification')} placeholder="코드만 또는 meta 태그 전체를 붙여넣어도 돼요" /></label>
+          <label className="field"><span>네이버 서치어드바이저 소유 확인 코드</span><input value={s.naverVerification} onChange={set('naverVerification')} placeholder="코드만 또는 meta 태그 전체를 붙여넣어도 돼요" /></label>
+        </section>
+
         {error && <p className="error">{error}</p>}
         {msg && <p className="notice">{msg}</p>}
         <div className="admin-actions">

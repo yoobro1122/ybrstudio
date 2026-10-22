@@ -7,7 +7,7 @@ export default function GameCard({ game }) {
     <Link href={`/games/${game.slug}`} className="game-card">
       <div className="box-top">
         {game.cover_url ? (
-          <img src={game.cover_url} alt="" loading="lazy" />
+          <img src={game.cover_url} alt={`${game.title} 커버`} loading="lazy" />
         ) : (
           <span className="box-placeholder">{game.title}</span>
         )}

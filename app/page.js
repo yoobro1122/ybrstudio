@@ -3,6 +3,7 @@ import { getSettings } from '@/lib/settings';
 import { serverClient } from '@/lib/supabase';
 import { LogoLockup } from '@/components/Logo';
 import GameCard from '@/components/GameCard';
+import Social from '@/components/Social';
 import { fmtDate, excerpt } from '@/lib/format';
 
 export const dynamic = 'force-dynamic';
@@ -26,6 +27,7 @@ export default async function Home() {
           <Link href="/boardgames" className="btn">보드게임</Link>
           <Link href="/contact" className="btn btn-ghost">컨택</Link>
         </div>
+        <Social s={site} />
       </section>
 
       <section className="section wrap">

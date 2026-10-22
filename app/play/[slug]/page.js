@@ -14,7 +14,7 @@ async function load(slug) {
 
 export async function generateMetadata({ params }) {
   const game = await load(params.slug);
-  return game ? { title: `${game.title} 웹 트라이얼` } : {};
+  return game ? { title: `${game.title} 웹 트라이얼`, robots: { index: false, follow: true } } : {};
 }
 
 export default async function PlayPage({ params }) {

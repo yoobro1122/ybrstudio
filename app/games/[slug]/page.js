@@ -4,6 +4,9 @@ import StageTrack from '@/components/StageTrack';
 import ReviewForm from '@/components/ReviewForm';
 import { fmtDate, stars } from '@/lib/format';
 import { categoryLabel } from '@/lib/status';
+import { getSettings } from '@/lib/settings';
+import { pageMeta, abs, siteUrl, plain } from '@/lib/seo';
+import JsonLd from '@/components/JsonLd';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,7 +17,10 @@ async function getGame(slug) {
 
 export async function generateMetadata({ params }) {
   const game = await getGame(params.slug);
-  return game ? { title: game.title, description: game.tagline } : {};
+  if (!game) return {};
+  const s = await getSettings();
+  const desc = [game.tagline, game.description].filter(Boolean).join(' ');
+  return pageMeta(s, { title: game.title, description: `${categoryLabel(game.category)} · ${desc || game.title}`, path: `/games/${game.slug}`, image: game.cover_url });
 }
 
 export default async function GamePage({ params }) {
@@ -35,8 +41,23 @@ export default async function GamePage({ params }) {
     game.age && ['연령', game.age],
   ].filter(Boolean);
 
+  const nums = String(game.players || '').match(/\d+/g) || [];
+  const ld = {
+    '@context': 'https://schema.org',
+    '@type': game.category === 'digital' ? 'VideoGame' : 'Game',
+    name: game.title,
+    description: plain([game.tagline, game.description].filter(Boolean).join(' '), 300),
+    url: `${siteUrl()}/games/${game.slug}`,
+    ...(game.cover_url ? { image: abs(game.cover_url) } : {}),
+    ...(nums.length ? { numberOfPlayers: { '@type': 'QuantitativeValue', minValue: +nums[0], maxValue: +(nums[1] || nums[0]) } } : {}),
+    ...(game.category === 'digital' ? { gamePlatform: ['PC', 'Mobile'] } : {}),
+    inLanguage: 'ko',
+    publisher: { '@id': `${siteUrl()}/#org` },
+  };
+
   return (
     <article className="wrap page-top game-detail">
+      <JsonLd data={ld} />
       <div className="game-hero">
         <div className="box-top big">
           {game.cover_url ? <img src={game.cover_url} alt={`${game.title} 커버`} /> : <span className="box-placeholder">{game.title}</span>}

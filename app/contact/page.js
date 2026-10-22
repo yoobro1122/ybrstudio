@@ -1,7 +1,12 @@
 import { getSettings } from '@/lib/settings';
 import ContactForm from '@/components/ContactForm';
 
-export const metadata = { title: '컨택' };
+import { pageMeta } from '@/lib/seo';
+
+export async function generateMetadata() {
+  const s = await getSettings();
+  return pageMeta(s, { title: '컨택', description: `${s.siteName}에 연락하기. ${s.contactLead}`, path: '/contact' });
+}
 
 const ig = (v) => String(v).trim().replace(/^@/, '').replace(/^https?:\/\/(www\.)?instagram\.com\//, '').replace(/\/.*$/, '');
 

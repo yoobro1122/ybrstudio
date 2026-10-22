@@ -387,3 +387,14 @@ textarea { resize: vertical; }
 .play-full iframe { display: block; width: 100%; height: 100%; border: 0; }
 body.playing { overflow: hidden; }
 .play-exit { position: fixed; top: calc(env(safe-area-inset-top, 0px) + 10px); right: 10px; z-index: 101; min-height: 40px; padding: 0 16px; border-radius: 999px; border: 0; background: rgba(0,0,0,.65); color: #fff; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }
+
+/* SNS */
+.social { list-style: none; display: flex; gap: 10px; flex-wrap: wrap; margin: 20px 0 0; padding: 0; }
+.social a { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px 0 12px; border: 1.5px solid var(--line); border-radius: 999px; text-decoration: none; font-size: 14px; font-weight: 600; color: var(--ink); }
+.social a:hover { border-color: var(--ink); }
+.social-compact { margin: 0; gap: 4px; }
+.social-compact a { width: 40px; padding: 0; justify-content: center; border-color: transparent; color: var(--muted); }
+.social-compact a:hover { color: var(--ink); border-color: transparent; }
+@media (max-width: 760px) { .social { margin-top: 18px; } .social a { min-height: 44px; } .social-compact a { width: 44px; } }
+.og-box { width: 200px; height: 105px; padding: 0; overflow: hidden; }
+.og-box img { width: 100%; height: 100%; object-fit: cover; }

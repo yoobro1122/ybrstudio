@@ -20,6 +20,7 @@ export async function GET(_req, { params }) {
       'Content-Security-Policy': 'sandbox allow-scripts allow-forms allow-modals allow-popups allow-pointer-lock allow-downloads',
       'X-Content-Type-Options': 'nosniff',
       'Cache-Control': 'no-store',
+      'X-Robots-Tag': 'noindex, nofollow',
     },
   });
 }

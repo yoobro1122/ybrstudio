@@ -22,6 +22,14 @@ const site = {
   copyright: '© 2026 YOOBROS STUDIO',
   footerEmail: '',
   footerNote: '',
+  // 검색 노출
+  seoDescription: '',      // 비우면 메인 소개 문구 첫 줄을 씀
+  ogImageUrl: '',          // 비우면 기본 공유 이미지(/og-default.png)
+  googleVerification: '',  // 구글 서치콘솔 소유 확인 코드
+  naverVerification: '',   // 네이버 서치어드바이저 소유 확인 코드
+  // 스튜디오 SNS (@ 없이 계정만)
+  instagram: '',
+  x: '',
   people: [
     { name: '유브로', roles: '기획, 제작', email: '', phone: '', instagram: '' },
     { name: '띵훈', roles: '기획, 디자인, 개발', email: '', phone: '', instagram: '' },
