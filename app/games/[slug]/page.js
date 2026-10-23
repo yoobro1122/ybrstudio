@@ -7,6 +7,8 @@ import { categoryLabel } from '@/lib/status';
 import { getSettings } from '@/lib/settings';
 import { pageMeta, abs, siteUrl, plain } from '@/lib/seo';
 import JsonLd from '@/components/JsonLd';
+import LikeShare from '@/components/LikeShare';
+import { badgeFor, BADGE_LABEL } from '@/lib/badge';
 
 export const dynamic = 'force-dynamic';
 
@@ -33,6 +35,8 @@ export default async function GamePage({ params }) {
     sb.from('reviews').select('id,nickname,rating,content,created_at').eq('game_id', game.id).eq('status', 'approved').order('created_at', { ascending: false }),
     sb.from('play_files').select('game_id').eq('game_id', game.id).maybeSingle(),
   ]);
+  const { data: likeRow } = await sb.rpc('like_state', { p_game: game.id, p_vid: '' });
+  const initialLikes = Number(likeRow?.[0]?.likes || 0);
   const playHref = playFile ? `/play/${game.slug}` : game.play_url;
   const avg = reviews?.length ? reviews.reduce((a, r) => a + r.rating, 0) / reviews.length : 0;
   const meta = [
@@ -41,6 +45,8 @@ export default async function GamePage({ params }) {
     game.age && ['연령', game.age],
   ].filter(Boolean);
 
+  const s = await getSettings();
+  const badge = badgeFor(game, s.badgeDays);
   const nums = String(game.players || '').match(/\d+/g) || [];
   const ld = {
     '@context': 'https://schema.org',
@@ -63,7 +69,7 @@ export default async function GamePage({ params }) {
           {game.cover_url ? <img src={game.cover_url} alt={`${game.title} 커버`} /> : <span className="box-placeholder">{game.title}</span>}
         </div>
         <div className="game-info">
-          <p className="kind">{categoryLabel(game.category)}</p>
+          <p className="kind">{categoryLabel(game.category)}{badge && <span className={`flag-inline flag-${badge}`}>{BADGE_LABEL[badge]}</span>}</p>
           <h1>{game.title}</h1>
           {game.tagline && <p className="lead">{game.tagline}</p>}
           {meta.length > 0 && (
@@ -80,6 +86,7 @@ export default async function GamePage({ params }) {
           ) : (
             <p className="small muted">웹 테스트 버전은 준비 중이에요.</p>
           )}
+          <LikeShare gameId={game.id} initialLikes={initialLikes} title={`${game.title} | ${s.siteName}`} text={game.tagline || ''} path={`/games/${game.slug}`} />
         </div>
       </div>
 

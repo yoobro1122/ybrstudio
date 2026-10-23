@@ -36,7 +36,7 @@ export default async function Home() {
           <Link href="/games" className="more">전체 보기</Link>
         </div>
         {games?.length ? (
-          <div className="game-grid home-grid">{games.map((g) => <GameCard key={g.id} game={g} />)}</div>
+          <div className="game-grid home-grid">{games.map((g) => <GameCard key={g.id} game={g} badgeDays={site.badgeDays} />)}</div>
         ) : (
           <p className="empty">아직 등록된 게임이 없어요. 관리자 화면에서 첫 게임을 올려보세요.</p>
         )}

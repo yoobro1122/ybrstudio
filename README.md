@@ -50,3 +50,5 @@ Vercel > 프로젝트 > Settings > Domains 에서 구입한 도메인 추가 후
 - v5: 모바일 최적화. 760px 이하에서 햄버거 메뉴, 로고 확대, 간격 정리, 메인 게임 6개 노출.
 - v6: 웹 트라이얼을 화면 전체로 열고, 게임 안 종료 버튼(yoobros-exit 신호)으로 게임 소개로 돌아가요. 종료 버튼이 없는 게임 파일은 2초 뒤 오른쪽 위에 기본 종료 버튼이 나타나요.
 - v7: SEO(페이지별 제목·설명·공유 미리보기, sitemap.xml, robots.txt, rss.xml, 구조화 데이터, 서치콘솔·서치어드바이저 확인 코드)와 스튜디오 SNS(인스타그램·X) 링크. 도메인 연결 시 Vercel 환경변수 NEXT_PUBLIC_SITE_URL에 https://새도메인 을 넣고 다시 배포하세요.
+- v8: 관리자 > 방문자 탭(날짜별 방문자·조회수, 많이 본 페이지, 유입 경로)과 게임 New·Up 표시. 이미 DB를 만든 경우 supabase/migration-5-visits-badges.sql을 한 번 실행하세요.
+- v9: 게임 좋아요(브라우저당 1회, 다시 누르면 취소)·공유하기 버튼, 관리자 프로젝트별 조회수. 이미 DB를 만든 경우 supabase/migration-6-likes-stats.sql을 한 번 실행하세요(migration-5 다음에).

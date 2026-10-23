@@ -4,6 +4,7 @@ import Footer from '@/components/Footer';
 import { getSettings, luminance } from '@/lib/settings';
 import { siteUrl, abs, pageMeta, socialLinks, verificationCode } from '@/lib/seo';
 import JsonLd from '@/components/JsonLd';
+import Tracker from '@/components/Tracker';
 
 export const dynamic = 'force-dynamic';
 
@@ -47,6 +48,7 @@ export default async function RootLayout({ children }) {
         <Header s={s} />
         <main id="main">{children}</main>
         <Footer s={s} />
+        <Tracker />
       </body>
     </html>
   );

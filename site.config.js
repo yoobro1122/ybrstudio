@@ -22,6 +22,7 @@ const site = {
   copyright: '© 2026 YOOBROS STUDIO',
   footerEmail: '',
   footerNote: '',
+  badgeDays: 14,           // New·Up 표시 기간(일)
   // 검색 노출
   seoDescription: '',      // 비우면 메인 소개 문구 첫 줄을 씀
   ogImageUrl: '',          // 비우면 기본 공유 이미지(/og-default.png)

@@ -189,6 +189,15 @@ export default function SettingsAdmin({ sb }) {
         </section>
 
         <section>
+          <h2>프로젝트 표시</h2>
+          <label className="field">
+            <span>New · Up 표시 기간 <em className="muted">{s.badgeDays}일</em></span>
+            <input type="range" min={LIMITS.badgeDays[0]} max={LIMITS.badgeDays[1]} value={s.badgeDays} onChange={(e) => setS({ ...s, badgeDays: Number(e.target.value) })} />
+          </label>
+          <p className="small muted">새로 올린 게임은 이 기간 동안 New가 붙어요. 그 뒤에 게임 정보를 고치거나 개발 일지·웹 트라이얼 파일을 올리면 같은 기간 동안 Up이 붙어요.</p>
+        </section>
+
+        <section>
           <h2>SNS</h2>
           <div className="form-row">
             <label className="field"><span>인스타그램 (@ 없이 계정만)</span><input value={s.instagram} onChange={set('instagram')} placeholder="yoobros_studio" /></label>

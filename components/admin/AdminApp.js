@@ -6,12 +6,14 @@ import GamesAdmin from './GamesAdmin';
 import PostsAdmin from './PostsAdmin';
 import MessagesAdmin from './MessagesAdmin';
 import SettingsAdmin from './SettingsAdmin';
+import VisitorsAdmin from './VisitorsAdmin';
 
 const TABS = [
   { key: 'reviews', label: '후기' },
   { key: 'games', label: '게임' },
   { key: 'posts', label: '블로그' },
   { key: 'messages', label: '문의' },
+  { key: 'visitors', label: '방문자' },
   { key: 'settings', label: '사이트 설정' },
 ];
 
@@ -51,6 +53,7 @@ export default function AdminApp() {
       {tab === 'posts' && <PostsAdmin sb={sb} />}
       {tab === 'messages' && <MessagesAdmin sb={sb} />}
       {tab === 'settings' && <SettingsAdmin sb={sb} />}
+      {tab === 'visitors' && <VisitorsAdmin sb={sb} />}
     </div>
   );
 }

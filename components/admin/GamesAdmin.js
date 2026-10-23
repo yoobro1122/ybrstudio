@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { STAGES, CATEGORIES, stageLabel, categoryLabel } from '@/lib/status';
 import { fmtDate } from '@/lib/format';
 import { uploadImage } from './upload';
+import { badgeFor, BADGE_LABEL } from '@/lib/badge';
 
 const EMPTY = {
   title: '', slug: '', tagline: '', description: '', players: '', play_time: '', age: '',
@@ -13,9 +14,14 @@ export default function GamesAdmin({ sb }) {
   const [games, setGames] = useState([]);
   const [editing, setEditing] = useState(null);
 
+  const [stats, setStats] = useState({});
   const load = useCallback(async () => {
-    const { data } = await sb.from('games').select('*').order('sort_order').order('created_at', { ascending: false });
+    const [{ data }, st] = await Promise.all([
+      sb.from('games').select('*').order('sort_order').order('created_at', { ascending: false }),
+      sb.rpc('game_stats', { p_days: 0 }),
+    ]);
     setGames(data || []);
+    setStats(Object.fromEntries((st.data || []).map((x) => [x.slug, x])));
   }, [sb]);
   useEffect(() => { load(); }, [load]);
 
@@ -31,8 +37,9 @@ export default function GamesAdmin({ sb }) {
           {games.map((g) => (
             <li key={g.id}>
               <div className="admin-item-main">
-                <p><strong>{g.title}</strong> {g.featured && <span className="badge approved">메인 노출</span>}</p>
+                <p><strong>{g.title}</strong> {badgeFor(g) && <span className={`flag-inline flag-${badgeFor(g)}`}>{BADGE_LABEL[badgeFor(g)]}</span>} {g.featured && <span className="badge approved">메인 노출</span>}</p>
                 <p className="small muted">{categoryLabel(g.category)} · /games/{g.slug} · {stageLabel(g.status)}{g.play_url ? ' · 웹 테스트 있음' : ''}</p>
+                {stats[g.slug] && <p className="small">조회 {Number(stats[g.slug].views).toLocaleString('ko-KR')} · 방문자 {Number(stats[g.slug].visitors).toLocaleString('ko-KR')} · 웹 플레이 {Number(stats[g.slug].plays).toLocaleString('ko-KR')} · 좋아요 {Number(stats[g.slug].likes).toLocaleString('ko-KR')}</p>}
               </div>
               <div className="admin-actions">
                 <button className="btn btn-ghost btn-sm" onClick={() => setEditing(g)}>수정</button>
