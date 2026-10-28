@@ -1,5 +1,6 @@
 'use client';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import PostBody from '@/components/PostBody';
 import { fmtDate } from '@/lib/format';
 import { uploadImage } from './upload';
 
@@ -39,6 +40,39 @@ function PostForm({ sb, initial, onDone }) {
   const [p, setP] = useState(initial);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [preview, setPreview] = useState(false);
+  const bodyRef = useRef(null);
+
+  // 커서 위치에 사진 줄을 끼워 넣어요. 사진은 항상 한 줄을 차지해요.
+  function insertAtCursor(lines) {
+    const ta = bodyRef.current;
+    const text = p.content || '';
+    const pos = ta ? ta.selectionStart : text.length;
+    const before = text.slice(0, pos), after = text.slice(pos);
+    const pre = before && !before.endsWith('\n') ? '\n' : '';
+    const post = after && !after.startsWith('\n') ? '\n' : '';
+    const block = pre + lines.join('\n') + '\n' + post;
+    const next = before + block + after;
+    setP((prev) => ({ ...prev, content: next }));
+    requestAnimationFrame(() => {
+      if (!ta) return;
+      const c = (before + block).length;
+      ta.focus(); ta.setSelectionRange(c, c);
+    });
+  }
+
+  async function onBodyImages(e) {
+    const files = Array.from(e.target.files || []);
+    e.target.value = '';
+    if (!files.length) return;
+    setBusy(true); setError('');
+    try {
+      const urls = [];
+      for (const f of files) urls.push(await uploadImage(sb, f));
+      insertAtCursor(urls.map((u) => `![](${u})`));
+    } catch { setError('사진을 올리지 못했어요.'); }
+    setBusy(false);
+  }
 
   async function onImages(e) {
     const files = Array.from(e.target.files || []);
@@ -86,7 +120,22 @@ function PostForm({ sb, initial, onDone }) {
         <h2>{p.id ? '글 수정' : '새 글'}</h2>
         <label className="field"><span>제목</span><input value={p.title} onChange={(e) => setP({ ...p, title: e.target.value })} /></label>
         <div className="field">
-          <span>사진 (첫 번째 사진이 목록 썸네일)</span>
+          <div className="body-toolbar">
+            <span>본문</span>
+            <div className="admin-actions">
+              <label className={`btn btn-sm ${busy ? 'disabled' : ''}`}>{busy ? '올리는 중…' : '사진 넣기'}<input type="file" accept="image/*" multiple hidden disabled={busy} onChange={onBodyImages} /></label>
+              <button type="button" className="btn btn-ghost btn-sm" aria-pressed={preview} onClick={() => setPreview(!preview)}>{preview ? '편집하기' : '미리보기'}</button>
+            </div>
+          </div>
+          {preview ? (
+            <div className="body-preview post"><PostBody content={p.content} title={p.title} /></div>
+          ) : (
+            <textarea ref={bodyRef} rows={18} value={p.content} onChange={(e) => setP({ ...p, content: e.target.value })} />
+          )}
+          <p className="small muted">본문에서 사진을 넣을 위치를 클릭한 뒤 "사진 넣기"를 누르세요. 사진은 <code>![](주소)</code> 한 줄로 들어가고, 대괄호 안에 글을 쓰면 사진 설명이 돼요. 예: <code>![3차 테스트 현장](주소)</code>. 줄을 잘라내고 붙여넣으면 사진 위치를 옮길 수 있어요.</p>
+        </div>
+        <div className="field">
+          <span>본문 위에 모아 보여줄 사진 <em className="muted">(선택 · 첫 번째 사진이 목록 썸네일)</em></span>
           {p.images?.length > 0 && (
             <div className="image-grid">
               {p.images.map((src, i) => (
@@ -103,7 +152,6 @@ function PostForm({ sb, initial, onDone }) {
           )}
           <input type="file" accept="image/*" multiple onChange={onImages} />
         </div>
-        <label className="field"><span>본문</span><textarea rows={14} value={p.content} onChange={(e) => setP({ ...p, content: e.target.value })} /></label>
         <label className="check"><input type="checkbox" checked={p.published} onChange={(e) => setP({ ...p, published: e.target.checked })} /> 공개하기</label>
         {error && <p className="error">{error}</p>}
         <div className="admin-actions">

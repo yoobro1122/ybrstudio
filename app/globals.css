@@ -168,7 +168,7 @@ p { margin: 0 0 .75em; }
 .post h1 { margin-top: 20px; }
 .post-images { display: grid; gap: 16px; margin: 32px 0; }
 .post-images img { width: 100%; border-radius: 4px; }
-.post .prose { font-size: 17px; line-height: 1.85; margin-top: 24px; }
+.post > .prose { font-size: 17px; line-height: 1.85; margin-top: 24px; }
 
 /* 컨택 */
 .contact { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 64px; }
@@ -452,3 +452,22 @@ body.playing { overflow: hidden; }
   .share-wrap .ls-btn { width: 100%; }
   .share-menu { left: auto; right: 0; }
 }
+
+/* 블로그 본문 사진 */
+.post-body { margin-top: 24px; }
+.post-body .prose { font-size: 17px; line-height: 1.85; margin: 0 0 1.2em; }
+.post-figure { margin: 28px 0; }
+.post-figure img { width: 100%; border-radius: 4px; }
+.post-figure figcaption { margin-top: 8px; font-size: 14px; color: var(--muted); text-align: center; }
+.body-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.body-toolbar > span { font-size: 14px; font-weight: 600; }
+.body-preview { border: 1.5px solid var(--line); border-radius: var(--radius); padding: 4px 20px 12px; max-height: 70vh; overflow: auto; }
+.btn.disabled { opacity: .5; pointer-events: none; }
+code { font-size: .92em; background: var(--board); padding: 1px 5px; border-radius: 4px; }
+@media (max-width: 760px) { .post-body .prose { font-size: 16px; } .post-figure { margin: 24px -20px; } .post-figure img { border-radius: 0; } .post-figure figcaption { padding: 0 20px; } }
+
+.tab-count { display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; margin-left: 6px; padding: 0 6px; border-radius: 999px; background: var(--point); color: #fff; font-size: 12px; font-weight: 800; vertical-align: 1px; }
+.todo { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+.todo button { display: inline-flex; align-items: center; gap: 4px; min-height: 44px; padding: 0 16px; border: 1.5px solid var(--point); border-radius: 999px; background: var(--paper); color: var(--ink); font: inherit; font-size: 15px; cursor: pointer; }
+.todo button strong { color: var(--point-ink); }
+.todo button:hover { background: var(--board); }

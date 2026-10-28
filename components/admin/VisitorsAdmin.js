@@ -9,7 +9,7 @@ function kstDay(offset = 0) {
   return d.toISOString().slice(0, 10);
 }
 
-export default function VisitorsAdmin({ sb }) {
+export default function VisitorsAdmin({ sb, counts = {}, onGo }) {
   const [range, setRange] = useState(30);
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
@@ -49,6 +49,12 @@ export default function VisitorsAdmin({ sb }) {
 
   return (
     <div className="visitors">
+      {(counts.reviews > 0 || counts.messages > 0) && (
+        <div className="todo">
+          {counts.reviews > 0 && <button type="button" onClick={() => onGo && onGo('reviews')}>검토 대기 후기 <strong>{counts.reviews}</strong>건 확인하기</button>}
+          {counts.messages > 0 && <button type="button" onClick={() => onGo && onGo('messages')}>새 문의 <strong>{counts.messages}</strong>건 확인하기</button>}
+        </div>
+      )}
       <div className="stat-grid">
         {[
           ['오늘', today], ['어제', yesterday], ['최근 7일', data.d7], ['최근 30일', data.d30],

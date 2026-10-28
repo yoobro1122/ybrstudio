@@ -3,6 +3,7 @@ import { serverClient } from '@/lib/supabase';
 import { fmtDate, excerpt } from '@/lib/format';
 import { getSettings } from '@/lib/settings';
 import { pageMeta } from '@/lib/seo';
+import { bodyImages } from '@/lib/post-body';
 
 export const dynamic = 'force-dynamic';
 export async function generateMetadata() {
@@ -23,7 +24,7 @@ export default async function BlogPage() {
           {posts.map((p) => (
             <li key={p.id}>
               <Link href={`/blog/${p.id}`} className="blog-item">
-                <div className="thumb">{p.images?.[0] ? <img src={p.images[0]} alt={p.title} loading="lazy" /> : null}</div>
+                <div className="thumb">{(p.images?.[0] || bodyImages(p.content)[0]) ? <img src={p.images?.[0] || bodyImages(p.content)[0]} alt={p.title} loading="lazy" /> : null}</div>
                 <div>
                   <time className="small muted">{fmtDate(p.created_at)}</time>
                   <h2 className="blog-title">{p.title}</h2>

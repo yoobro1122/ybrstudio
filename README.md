@@ -52,3 +52,4 @@ Vercel > 프로젝트 > Settings > Domains 에서 구입한 도메인 추가 후
 - v7: SEO(페이지별 제목·설명·공유 미리보기, sitemap.xml, robots.txt, rss.xml, 구조화 데이터, 서치콘솔·서치어드바이저 확인 코드)와 스튜디오 SNS(인스타그램·X) 링크. 도메인 연결 시 Vercel 환경변수 NEXT_PUBLIC_SITE_URL에 https://새도메인 을 넣고 다시 배포하세요.
 - v8: 관리자 > 방문자 탭(날짜별 방문자·조회수, 많이 본 페이지, 유입 경로)과 게임 New·Up 표시. 이미 DB를 만든 경우 supabase/migration-5-visits-badges.sql을 한 번 실행하세요.
 - v9: 게임 좋아요(브라우저당 1회, 다시 누르면 취소)·공유하기 버튼, 관리자 프로젝트별 조회수. 이미 DB를 만든 경우 supabase/migration-6-likes-stats.sql을 한 번 실행하세요(migration-5 다음에).
+- v10: 블로그 본문 중간에 사진 넣기(![설명](주소) 한 줄)와 미리보기, 관리자 첫 화면을 통계로 변경(검토 대기 후기·새 문의 개수 표시). DB 작업 없음.
