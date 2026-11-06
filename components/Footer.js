@@ -18,6 +18,7 @@ export default function Footer({ s }) {
         {s.copyright && <p className="muted small">{s.copyright}</p>}
         <Social s={s} compact />
         <Link className="small footer-privacy" href="/privacy">개인정보처리방침</Link>
+        <Link className="small footer-privacy" href="/terms">서비스 이용약관</Link>
         {s.footerEmail && <a className="muted small footer-email" href={`mailto:${s.footerEmail}`}>{s.footerEmail}</a>}
         {s.footerNote && <p className="muted small footer-note">{s.footerNote}</p>}
       </div>
