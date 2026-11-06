@@ -471,3 +471,18 @@ code { font-size: .92em; background: var(--board); padding: 1px 5px; border-radi
 .todo button { display: inline-flex; align-items: center; gap: 4px; min-height: 44px; padding: 0 16px; border: 1.5px solid var(--point); border-radius: 999px; background: var(--paper); color: var(--ink); font: inherit; font-size: 15px; cursor: pointer; }
 .todo button strong { color: var(--point-ink); }
 .todo button:hover { background: var(--board); }
+
+/* 파비콘 미리보기 */
+.fav-box { flex-direction: column; gap: 8px; width: 220px; height: auto; padding: 12px; }
+.fav-box > img { width: 48px; height: 48px; object-fit: contain; }
+.fav-tab { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; padding: 6px 10px; border-radius: 8px 8px 0 0; background: var(--board); font-size: 12px; color: var(--ink); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.fav-tab img { width: 16px; height: 16px; object-fit: contain; flex: none; }
+
+/* 도메인 */
+.domains h2, .domain-setup h2 { font-size: 18px; margin: 0 0 12px; }
+.domain-card { border: 1.5px solid var(--line); border-radius: 8px; padding: 16px; margin-top: 14px; display: grid; gap: 10px; }
+.domain-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.domain-name { font-size: 17px; margin-right: 8px; }
+.dns-table td code { overflow-wrap: anywhere; }
+.steps { padding-left: 20px; display: grid; gap: 10px; margin: 12px 0; }
+@media (max-width: 760px) { .inline-form { grid-template-columns: 1fr; } }

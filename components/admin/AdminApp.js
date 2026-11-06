@@ -7,6 +7,7 @@ import PostsAdmin from './PostsAdmin';
 import MessagesAdmin from './MessagesAdmin';
 import SettingsAdmin from './SettingsAdmin';
 import VisitorsAdmin from './VisitorsAdmin';
+import DomainAdmin from './DomainAdmin';
 
 const TABS = [
   { key: 'visitors', label: '통계' },
@@ -15,6 +16,7 @@ const TABS = [
   { key: 'posts', label: '블로그' },
   { key: 'messages', label: '문의' },
   { key: 'settings', label: '사이트 설정' },
+  { key: 'domain', label: '도메인' },
 ];
 
 export default function AdminApp() {
@@ -63,6 +65,7 @@ export default function AdminApp() {
       {tab === 'posts' && <PostsAdmin sb={sb} />}
       {tab === 'messages' && <MessagesAdmin sb={sb} />}
       {tab === 'settings' && <SettingsAdmin sb={sb} />}
+      {tab === 'domain' && <DomainAdmin sb={sb} />}
       {tab === 'visitors' && <VisitorsAdmin sb={sb} counts={counts} onGo={setTab} />}
     </div>
   );

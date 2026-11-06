@@ -94,6 +94,20 @@ export default function SettingsAdmin({ sb }) {
               </div>
             )}
           </div>
+          <div className="field">
+            <span>파비콘 (브라우저 탭 아이콘)</span>
+            <div className="logo-field">
+              <div className="logo-box fav-box">
+                <img src={s.faviconUrl || '/icon.svg'} alt="" />
+                <span className="fav-tab"><img src={s.faviconUrl || '/icon.svg'} alt="" />{s.siteName}</span>
+              </div>
+              <div className="field">
+                <label className="btn btn-ghost btn-sm">이미지 올리기<input type="file" accept="image/png,image/svg+xml,image/x-icon,image/vnd.microsoft.icon,image/webp" hidden onChange={(e) => upload('faviconUrl', e)} /></label>
+                {s.faviconUrl && <button type="button" className="text-btn" onClick={() => setS({ ...s, faviconUrl: '' })}>기본 아이콘으로 되돌리기</button>}
+              </div>
+            </div>
+            <p className="small muted">정사각형 PNG(512×512 권장)나 SVG를 올리세요. 휴대폰 홈 화면 아이콘에도 쓰여요. 브라우저가 예전 아이콘을 기억하고 있으면 바뀌기까지 시간이 걸릴 수 있어요.</p>
+          </div>
           <label className="field">
             <span>상단 로고 크기 <em className="muted">{s.headerLogoSize}px</em></span>
             <input type="range" min={LIMITS.headerLogoSize[0]} max={LIMITS.headerLogoSize[1]} value={s.headerLogoSize} onChange={(e) => setS({ ...s, headerLogoSize: Number(e.target.value) })} />

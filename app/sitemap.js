@@ -1,9 +1,11 @@
 import { serverClient } from '@/lib/supabase';
 import { siteUrl } from '@/lib/seo';
+import { getSettings } from '@/lib/settings';
 
 export const dynamic = 'force-dynamic';
 
 export default async function sitemap() {
+  await getSettings();
   const base = siteUrl();
   const sb = serverClient();
   const [{ data: games }, { data: posts }] = await Promise.all([

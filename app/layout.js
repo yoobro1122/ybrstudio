@@ -18,7 +18,7 @@ export async function generateMetadata() {
     metadataBase: new URL(siteUrl()),
     title: { default: s.siteName, template: `%s | ${s.siteName}` },
     applicationName: s.siteName,
-    icons: { icon: '/icon.svg' },
+    icons: { icon: s.faviconUrl || '/icon.svg', apple: s.faviconUrl || '/logo.png' },
     alternates: { canonical: '/', types: { 'application/rss+xml': [{ url: '/rss.xml', title: `${s.siteName} 블로그` }] } },
     verification: { ...(google ? { google } : {}), ...(naver ? { other: { 'naver-site-verification': naver } } : {}) },
   };

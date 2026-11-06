@@ -27,7 +27,7 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function PostPage({ params }) {
-  const post = await getPost(params.id);
+  const [post] = await Promise.all([getPost(params.id), getSettings()]);
   if (!post) notFound();
   const inBody = new Set(bodyImages(post.content));
   const topImages = (post.images || []).filter((src) => !inBody.has(src));

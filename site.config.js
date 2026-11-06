@@ -11,6 +11,8 @@ const site = {
   contactLead: '게임 협업, 플레이테스트 참여, 출판 제안 모두 환영해요.',
   colors: { bg: '#FFFFFF', ink: '#1C1C1F', point: '#F2613F' },
   logoUrl: '',
+  faviconUrl: '',          // 비우면 기본 YBR 아이콘
+  primaryDomain: '',       // 대표 도메인 (관리자 > 도메인에서 지정)
   logoSize: 88,        // 메인 로고 높이(px)
   showLogoSub: true,   // 로고 아래 문구 표시
   headerLogoSize: 20,  // 상단 로고 크기(px)
