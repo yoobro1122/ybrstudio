@@ -1,5 +1,6 @@
 import { SiteLogo } from './Logo';
 import Social from './Social';
+import Link from 'next/link';
 
 function FooterLogo({ s }) {
   if (s.footerLogoMode === 'none') return null;
@@ -16,6 +17,7 @@ export default function Footer({ s }) {
         <FooterLogo s={s} />
         {s.copyright && <p className="muted small">{s.copyright}</p>}
         <Social s={s} compact />
+        <Link className="small footer-privacy" href="/privacy">개인정보처리방침</Link>
         {s.footerEmail && <a className="muted small footer-email" href={`mailto:${s.footerEmail}`}>{s.footerEmail}</a>}
         {s.footerNote && <p className="muted small footer-note">{s.footerNote}</p>}
       </div>

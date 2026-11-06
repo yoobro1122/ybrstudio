@@ -22,6 +22,7 @@ export default async function sitemap() {
     { url: `${base}/games`, lastModified: now, changeFrequency: 'weekly', priority: 0.6 },
     { url: `${base}/blog`, lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
     { url: `${base}/contact`, lastModified: now, changeFrequency: 'yearly', priority: 0.4 },
+    { url: `${base}/privacy`, lastModified: new Date('2026-11-06T00:00:00+09:00'), changeFrequency: 'yearly', priority: 0.3 },
     ...(games || []).map((g) => ({ url: `${base}/games/${g.slug}`, lastModified: new Date(g.updated_at || g.created_at), changeFrequency: 'weekly', priority: 0.9 })),
     // RSS에서 뺀 글도 사이트맵에는 그대로 남아요.
     ...(posts || []).map((p) => ({ url: `${base}/blog/${p.id}`, lastModified: new Date(p.created_at), changeFrequency: 'monthly', priority: 0.6 })),
