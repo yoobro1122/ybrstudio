@@ -18,13 +18,13 @@ export default function PostsAdmin({ sb }) {
 
   return (
     <div>
-      <button className="btn" onClick={() => setEditing({ title: '', content: '', images: [], published: true })}>새 글 쓰기</button>
+      <button className="btn" onClick={() => setEditing({ title: '', content: '', images: [], published: true, include_in_rss: true })}>새 글 쓰기</button>
       {posts.length === 0 ? <p className="empty">아직 쓴 글이 없어요.</p> : (
         <ul className="admin-list">
           {posts.map((p) => (
             <li key={p.id}>
               <div className="admin-item-main">
-                <p><strong>{p.title}</strong> {!p.published && <span className="badge hidden">비공개</span>}</p>
+                <p><strong>{p.title}</strong> {!p.published && <span className="badge hidden">비공개</span>} {p.include_in_rss === false && <span className="badge hidden">RSS 제외</span>}</p>
                 <p className="small muted">{fmtDate(p.created_at)} · 사진 {p.images?.length || 0}장</p>
               </div>
               <div className="admin-actions"><button className="btn btn-ghost btn-sm" onClick={() => setEditing(p)}>수정</button></div>
@@ -100,7 +100,7 @@ function PostForm({ sb, initial, onDone }) {
     setError('');
     if (!p.title.trim()) return setError('제목을 입력하세요.');
     setBusy(true);
-    const fields = { title: p.title.trim(), content: p.content, images: p.images || [], published: p.published };
+    const fields = { title: p.title.trim(), content: p.content, images: p.images || [], published: p.published, include_in_rss: p.include_in_rss !== false };
     const res = p.id ? await sb.from('posts').update(fields).eq('id', p.id) : await sb.from('posts').insert(fields);
     setBusy(false);
     if (res.error) return setError('저장하지 못했어요.');
@@ -153,6 +153,8 @@ function PostForm({ sb, initial, onDone }) {
           <input type="file" accept="image/*" multiple onChange={onImages} />
         </div>
         <label className="check"><input type="checkbox" checked={p.published} onChange={(e) => setP({ ...p, published: e.target.checked })} /> 공개하기</label>
+        <label className="check"><input type="checkbox" checked={p.include_in_rss !== false} onChange={(e) => setP({ ...p, include_in_rss: e.target.checked })} /> RSS에 포함</label>
+        <p className="small muted rss-help">끄면 RSS 구독(네이버 등 수집)에서만 빠지고, 사이트와 사이트맵에는 그대로 남아요.</p>
         {error && <p className="error">{error}</p>}
         <div className="admin-actions">
           <button className="btn" disabled={busy}>{busy ? '저장 중…' : p.published ? '발행' : '비공개로 저장'}</button>

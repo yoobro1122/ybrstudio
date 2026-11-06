@@ -308,3 +308,6 @@ language sql stable security invoker as $$
   from public.games g
   order by 3 desc, g.title
 $$;
+
+-- 블로그 RSS 포함 여부
+alter table public.posts add column if not exists include_in_rss boolean not null default true;

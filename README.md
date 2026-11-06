@@ -54,3 +54,4 @@ Vercel > 프로젝트 > Settings > Domains 에서 구입한 도메인 추가 후
 - v9: 게임 좋아요(브라우저당 1회, 다시 누르면 취소)·공유하기 버튼, 관리자 프로젝트별 조회수. 이미 DB를 만든 경우 supabase/migration-6-likes-stats.sql을 한 번 실행하세요(migration-5 다음에).
 - v10: 블로그 본문 중간에 사진 넣기(![설명](주소) 한 줄)와 미리보기, 관리자 첫 화면을 통계로 변경(검토 대기 후기·새 문의 개수 표시). DB 작업 없음.
 - v11: 관리자 > 사이트 설정에 파비콘 변경, 관리자 > 도메인 탭(Vercel API로 도메인 추가·DNS 값 안내·확인·대표 주소 지정). 도메인 기능은 환경변수 VERCEL_API_TOKEN, VERCEL_PROJECT_ID(팀이면 VERCEL_TEAM_ID) 필요. DB 작업 없음.
+- v12: 사이트맵 1시간마다 갱신, RSS에 블로그 글+새 게임 소식을 날짜순 최신 20개로 묶음, 블로그 글별 'RSS에 포함' 선택. 이미 DB를 만든 경우 supabase/migration-7-rss.sql을 한 번 실행하세요.
