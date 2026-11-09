@@ -107,7 +107,7 @@ export default function TermsPage() {
         <p>이 약관은 대한민국 법령에 따라 해석합니다. 분쟁은 우선 당사자 간 협의로 해결하며, 해결되지 않는 경우 관계 법령에 따른 분쟁조정 절차나 관할 법원을 이용할 수 있습니다. 이용자에게 법령상 보장되는 소비자 보호와 재판받을 권리를 제한하지 않습니다.</p>
         <dl className="privacy-contact">
           <div><dt>운영자</dt><dd>유명훈 · 유브로스</dd></div>
-          <div><dt>이메일</dt><dd><a href="mailto:mhoo999@naver.com">mhoo999@naver.com</a></dd></div>
+          <div><dt>이메일</dt><dd><a href="mailto:denghoon@yoobros.com">denghoon@yoobros.com</a></dd></div>
           <div><dt>전화</dt><dd><a href="tel:01052209785">010-5220-9785</a></dd></div>
         </dl>
       </TermsSection>

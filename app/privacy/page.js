@@ -113,7 +113,7 @@ export default function PrivacyPage() {
       <PolicySection index={10}>
         <dl className="privacy-contact">
           <div><dt>이름</dt><dd>유명훈</dd></div>
-          <div><dt>이메일</dt><dd><a href="mailto:mhoo999@naver.com">mhoo999@naver.com</a></dd></div>
+          <div><dt>이메일</dt><dd><a href="mailto:denghoon@yoobros.com">denghoon@yoobros.com</a></dd></div>
           <div><dt>전화</dt><dd><a href="tel:01052209785">010-5220-9785</a></dd></div>
         </dl>
       </PolicySection>

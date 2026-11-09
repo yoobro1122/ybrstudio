@@ -7,7 +7,7 @@ export async function generateMetadata() {
   return pageMeta(s, { title: '계정 및 데이터 삭제 요청', description: '렛츠콕! 배드민턴의 계정 및 데이터 삭제를 앱 재설치 없이 이메일로 요청하는 방법을 안내합니다.', path: '/delete-account' });
 }
 
-const email = 'mhoo999@naver.com';
+const email = 'denghoon@yoobros.com';
 const subject = '[렛츠콕! 배드민턴] 계정 및 데이터 삭제 요청';
 const body = `앱 이름: 렛츠콕! 배드민턴
 요청 내용: 계정 및 관련 데이터 삭제
