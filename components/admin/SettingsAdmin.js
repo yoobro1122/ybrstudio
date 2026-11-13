@@ -208,6 +208,8 @@ export default function SettingsAdmin({ sb }) {
             <span>New · Up 표시 기간 <em className="muted">{s.badgeDays}일</em></span>
             <input type="range" min={LIMITS.badgeDays[0]} max={LIMITS.badgeDays[1]} value={s.badgeDays} onChange={(e) => setS({ ...s, badgeDays: Number(e.target.value) })} />
           </label>
+          <label className="check"><input type="checkbox" checked={s.showTicker} onChange={(e) => setS({ ...s, showTicker: e.target.checked })} /> 메인 상단에 업데이트 로그 롤링 보이기</label>
+          <p className="small muted">업데이트 로그에는 게임별 개발 일지 중 "메인 업데이트 로그에도 띄우기"를 켠 최신 10개가 나와요.</p>
           <p className="small muted">새로 올린 게임은 이 기간 동안 New가 붙어요. 그 뒤에 게임 정보를 고치거나 개발 일지·웹 트라이얼 파일을 올리면 같은 기간 동안 Up이 붙어요.</p>
         </section>
 

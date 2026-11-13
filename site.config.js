@@ -24,6 +24,7 @@ const site = {
   copyright: '© 2026 YOOBROS STUDIO',
   footerEmail: '',
   footerNote: '',
+  showTicker: true,        // 메인 상단 업데이트 로그 롤링
   badgeDays: 14,           // New·Up 표시 기간(일)
   // 검색 노출
   seoDescription: '',      // 비우면 메인 소개 문구 첫 줄을 씀

@@ -4,6 +4,7 @@ import { serverClient } from '@/lib/supabase';
 import { LogoLockup } from '@/components/Logo';
 import GameCard from '@/components/GameCard';
 import Social from '@/components/Social';
+import UpdateTicker from '@/components/UpdateTicker';
 import { fmtDate, excerpt } from '@/lib/format';
 
 export const dynamic = 'force-dynamic';
@@ -11,13 +12,22 @@ export const dynamic = 'force-dynamic';
 export default async function Home() {
   const site = await getSettings();
   const sb = serverClient();
-  const [{ data: games }, { data: posts }] = await Promise.all([
+  const [{ data: games }, { data: posts }, { data: logs }] = await Promise.all([
     sb.from('games').select('*').order('featured', { ascending: false }).order('sort_order').order('created_at', { ascending: false }).limit(12),
     sb.from('posts').select('id,title,content,images,created_at').eq('published', true).order('created_at', { ascending: false }).limit(3),
+    site.showTicker
+      ? sb.from('game_updates').select('id,content,created_at,games!inner(slug,title)').eq('show_in_ticker', true).order('created_at', { ascending: false }).limit(10)
+      : Promise.resolve({ data: [] }),
   ]);
+  const when = new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false });
+  const ticker = (logs || []).map((l) => {
+    const p = Object.fromEntries(when.formatToParts(new Date(l.created_at)).map((x) => [x.type, x.value]));
+    return { id: l.id, iso: l.created_at, when: `${p.month}.${p.day} ${p.hour}:${p.minute}`, game: l.games.title, text: l.content, href: `/games/${l.games.slug}#log` };
+  });
 
   return (
     <>
+      <UpdateTicker items={ticker} />
       <section className="hero wrap">
         <LogoLockup s={site} height={site.logoSize} />
         <h1 className="hero-title" style={{ '--hs': `${site.headlineSize}px` }}>{site.headline}</h1>

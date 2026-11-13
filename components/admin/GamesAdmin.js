@@ -7,7 +7,7 @@ import { badgeFor, BADGE_LABEL } from '@/lib/badge';
 
 const EMPTY = {
   title: '', slug: '', tagline: '', description: '', players: '', play_time: '', age: '',
-  category: 'board', status: 'idea', play_url: '', cover_url: '', featured: false, sort_order: 0,
+  category: 'board', status: 'idea', play_url: '', cover_url: '', featured: false, sort_order: 0, is_public: true,
 };
 
 export default function GamesAdmin({ sb }) {
@@ -25,6 +25,14 @@ export default function GamesAdmin({ sb }) {
   }, [sb]);
   useEffect(() => { load(); }, [load]);
 
+  async function togglePublic(g) {
+    const next = g.is_public === false;
+    if (!next && !confirm(`'${g.title}'을(를) 비공개로 바꿀까요? 홈페이지 목록, 게임 소개, 웹 플레이, 업데이트 로그에서 모두 숨겨져요.`)) return;
+    const { error } = await sb.from('games').update({ is_public: next }).eq('id', g.id);
+    if (error) return alert('바꾸지 못했어요. Supabase에서 migration-8-private-ticker.sql을 실행했는지 확인하세요.');
+    load();
+  }
+
   if (editing) {
     return <GameForm sb={sb} initial={editing} onDone={() => { setEditing(null); load(); }} />;
   }
@@ -37,11 +45,12 @@ export default function GamesAdmin({ sb }) {
           {games.map((g) => (
             <li key={g.id}>
               <div className="admin-item-main">
-                <p><strong>{g.title}</strong> {badgeFor(g) && <span className={`flag-inline flag-${badgeFor(g)}`}>{BADGE_LABEL[badgeFor(g)]}</span>} {g.featured && <span className="badge approved">메인 노출</span>}</p>
+                <p><strong>{g.title}</strong> {badgeFor(g) && <span className={`flag-inline flag-${badgeFor(g)}`}>{BADGE_LABEL[badgeFor(g)]}</span>} {g.featured && <span className="badge approved">메인 노출</span>} {g.is_public === false && <span className="badge hidden">비공개</span>}</p>
                 <p className="small muted">{categoryLabel(g.category)} · /games/{g.slug} · {stageLabel(g.status)}{g.play_url ? ' · 웹 테스트 있음' : ''}</p>
                 {stats[g.slug] && <p className="small">조회 {Number(stats[g.slug].views).toLocaleString('ko-KR')} · 방문자 {Number(stats[g.slug].visitors).toLocaleString('ko-KR')} · 웹 플레이 {Number(stats[g.slug].plays).toLocaleString('ko-KR')} · 좋아요 {Number(stats[g.slug].likes).toLocaleString('ko-KR')}</p>}
               </div>
               <div className="admin-actions">
+                <button className="btn btn-ghost btn-sm" onClick={() => togglePublic(g)}>{g.is_public === false ? '공개로 전환' : '비공개로 전환'}</button>
                 <button className="btn btn-ghost btn-sm" onClick={() => setEditing(g)}>수정</button>
               </div>
             </li>
@@ -127,6 +136,7 @@ function GameForm({ sb, initial, onDone }) {
         </div>
         <div className="form-row">
           <label className="check"><input type="checkbox" checked={g.featured} onChange={set('featured')} /> 메인에 먼저 보여주기</label>
+          <label className="check"><input type="checkbox" checked={g.is_public !== false} onChange={(e) => setG({ ...g, is_public: e.target.checked })} /> 홈페이지에 공개</label>
           <label className="field"><span>정렬 순서 (작을수록 앞)</span><input type="number" value={g.sort_order} onChange={set('sort_order')} /></label>
         </div>
         {error && <p className="error">{error}</p>}
@@ -151,11 +161,18 @@ function GameUpdates({ sb, gameId }) {
   }, [sb, gameId]);
   useEffect(() => { load(); }, [load]);
 
+  const [ticker, setTicker] = useState(true);
   async function add(e) {
     e.preventDefault();
     if (!text.trim()) return;
-    await sb.from('game_updates').insert({ game_id: gameId, content: text.trim() });
+    let { error } = await sb.from('game_updates').insert({ game_id: gameId, content: text.trim(), show_in_ticker: ticker });
+    if (error) ({ error } = await sb.from('game_updates').insert({ game_id: gameId, content: text.trim() }));
+    if (error) return alert('일지를 추가하지 못했어요.');
     setText('');
+    load();
+  }
+  async function toggleTicker(u) {
+    await sb.from('game_updates').update({ show_in_ticker: u.show_in_ticker === false }).eq('id', u.id);
     load();
   }
   async function remove(id) {
@@ -168,14 +185,18 @@ function GameUpdates({ sb, gameId }) {
     <section className="section">
       <h2>개발 일지</h2>
       <form className="form inline-form" onSubmit={add}>
-        <input value={text} onChange={(e) => setText(e.target.value)} placeholder="예: 3차 플레이테스트 완료, 살인마 카드 2장 조정" />
+        <input value={text} onChange={(e) => setText(e.target.value)} placeholder="예: 데드포인트 1.2버전이 등록되었습니다." />
         <button className="btn">일지 추가</button>
       </form>
+      <label className="check"><input type="checkbox" checked={ticker} onChange={(e) => setTicker(e.target.checked)} /> 메인 업데이트 로그에도 띄우기</label>
       <ul className="admin-list">
         {rows.map((u) => (
           <li key={u.id}>
-            <div className="admin-item-main"><p className="small muted">{fmtDate(u.created_at)}</p><p>{u.content}</p></div>
-            <div className="admin-actions"><button className="btn btn-danger btn-sm" onClick={() => remove(u.id)}>삭제</button></div>
+            <div className="admin-item-main"><p className="small muted">{fmtDate(u.created_at)} {u.show_in_ticker === false ? <span className="badge hidden">로그 숨김</span> : <span className="badge approved">메인 로그</span>}</p><p>{u.content}</p></div>
+            <div className="admin-actions">
+              <button className="btn btn-ghost btn-sm" onClick={() => toggleTicker(u)}>{u.show_in_ticker === false ? '메인 로그에 띄우기' : '메인 로그에서 빼기'}</button>
+              <button className="btn btn-danger btn-sm" onClick={() => remove(u.id)}>삭제</button>
+            </div>
           </li>
         ))}
       </ul>

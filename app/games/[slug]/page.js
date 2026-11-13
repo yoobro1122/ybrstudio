@@ -98,7 +98,7 @@ export default async function GamePage({ params }) {
       )}
 
       {updates?.length > 0 && (
-        <section className="section">
+        <section className="section" id="log">
           <h2>개발 일지</h2>
           <ol className="log">
             {updates.map((u) => (
